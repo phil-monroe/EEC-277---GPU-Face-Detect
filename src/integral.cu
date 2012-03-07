@@ -41,23 +41,17 @@ void vertical_kernel(float* data, int rows, int cols, size_t stride ) {
 
 
 void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
-	float *dev_data, *dev_fin_data;
+	float *dev_data;
 	cudaMalloc( &dev_data, rows*cols*sizeof(float));
-	cudaMalloc( &dev_fin_data, rows*cols*sizeof(float));
-	
 	checkCUDAError("malloc");
 	
 	cudaMemcpy(dev_data, data, rows*cols*sizeof(float), cudaMemcpyHostToDevice);
-	cudaMemcpy(dev_fin_data, data, rows*cols*sizeof(float), cudaMemcpyHostToDevice);
-	
 	checkCUDAError("memcpy host to device");
 	
 	int num_blocks = rows < THREADS_PER_BLOCK ? 1 : rows/THREADS_PER_BLOCK + 1;
 	
 	horizontal_kernel<<<num_blocks , THREADS_PER_BLOCK>>>(dev_data, rows, cols, stride);
-	
 	num_blocks = cols < THREADS_PER_BLOCK ? 1 : cols/THREADS_PER_BLOCK + 1;
-	
 	cudaThreadSynchronize();
 	checkCUDAError("horizontal kernel");
 	
@@ -68,9 +62,7 @@ void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
 	cudaMemcpy(data, dev_data, rows*cols*sizeof(float), cudaMemcpyDeviceToHost);
 	checkCUDAError("memcpy device to host");
 	
-	cudaFree(dev_data);
-	cudaFree(dev_fin_data);
-	
+	cudaFree(dev_data);	
 	checkCUDAError("free");
 	
 }
