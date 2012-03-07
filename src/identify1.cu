@@ -7,14 +7,14 @@
 #define THRESHOLD = 0.85 //definitely needs to be changed
 
 __global__ 
-void ID1kernel(int startX, int startY, int scale, int** integImage ) {
+void ID1kernel(int startX, int startY, int scale, float* intImage ) {
     // take important corners from image
-	int upperLeft = integImage[startX][startY];
-	int upperRight = integImage[startX+BASE_WIDTH*scale][startY];
-	int midLeft = integImage[startX][startY+BASE_HEIGHT*scale];
-	int midRight = integImage[startX+BASE_WIDTH*scale][startY+BASE_HEIGHT*scale];
-	int lowerLeft = integImage[startX][startY+BASE_HEIGHT*scale<<1];
-	int lowerRight = integImage[startX+BASE_WIDTH*scale][startY+BASE_HEIGHT*scale<<1];
+	int upperLeft 		= intImage[startX][startY];
+	int upperRight 	= intImage[startX+BASE_WIDTH*scale][startY];
+	int midLeft 		= intImage[startX][startY+BASE_HEIGHT*scale];
+	int midRight 		= intImage[startX+BASE_WIDTH*scale][startY+BASE_HEIGHT*scale];
+	int lowerLeft 		= intImage[startX][startY+BASE_HEIGHT*scale<<1];
+	int lowerRight 	= intImage[startX+BASE_WIDTH*scale][startY+BASE_HEIGHT*scale<<1];
 	
 	//calculate fit value based on identifier (hard-coded)
 	int fitValue = midRight<<1-midLeft<<1 + upperLeft - lowerRight - upperRight + lowerLeft;
