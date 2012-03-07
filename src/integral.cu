@@ -1,24 +1,76 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
-#include "integral.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-int test(){
-	return 7;
+#include "integral.h"
+#include "helpers.cu"
+
+#define THREADS_PER_BLOCK 32
+
+
+
+
+__global__ 
+void horizontal_kernel(float* data, int rows, int cols, size_t stride ) {
+    // start from row 0
+	int row = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if(row < rows){
+		for(int col = 1; col<cols; ++col){
+				data[row*stride + col] = data[row*stride + col] + data[row*stride + col-1];
+		}
+	}
+
+	
 }
 
 __global__ 
-void kernel(float* d_counters) {
-    // Increment the counter
-	int i = blockIdx.x * blockDim.x + threadIdx.x;
+void vertical_kernel(float* data, int rows, int cols, size_t stride ) {
+    // Start from column 1
+	int col = blockIdx.x * blockDim.x + threadIdx.x;
 	
-	// Declare a bunch or registers and init to 0.0f
-	float reg0, reg1, reg2,  reg3,  reg4,  reg5,  reg6,  reg7;
-	
-	// 1 FLOP per assignment = 8 FLOPs total
-	reg0  = reg1  = reg2  = reg3  = 9.765625e-10f * threadIdx.x;
-	reg4  = reg5  = reg6  = reg7  = 9.765625e-10f * threadIdx.y;
-	
+	if(col < cols){
+		for(int row = 1; row<rows; ++row){
+			data[row*stride + col] = data[row*stride + col] + data[(row-1)*stride + col] ;
+		}
+	}
+}
 
-	// 8 More flops.
-	d_counters[i] = reg0 + reg1 + reg2  + reg3  + reg4  + reg5  + reg6  + reg7  + 8.0f;
+
+
+void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
+	float *dev_data, *dev_fin_data;
+	cudaMalloc( &dev_data, rows*cols*sizeof(float));
+	cudaMalloc( &dev_fin_data, rows*cols*sizeof(float));
+	
+	checkCUDAError("malloc");
+	
+	cudaMemcpy(dev_data, data, rows*cols*sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_fin_data, data, rows*cols*sizeof(float), cudaMemcpyHostToDevice);
+	
+	checkCUDAError("memcpy host to device");
+	
+	int num_blocks = rows < THREADS_PER_BLOCK ? 1 : rows/THREADS_PER_BLOCK + 1;
+	
+	horizontal_kernel<<<num_blocks , THREADS_PER_BLOCK>>>(dev_data, rows, cols, stride);
+	
+	num_blocks = cols < THREADS_PER_BLOCK ? 1 : cols/THREADS_PER_BLOCK + 1;
+	
+	cudaThreadSynchronize();
+	checkCUDAError("horizontal kernel");
+	
+	vertical_kernel<<<num_blocks , THREADS_PER_BLOCK>>>(dev_data, rows, cols, stride);
+	cudaThreadSynchronize();
+	checkCUDAError("vertical kernel");
+	
+	cudaMemcpy(data, dev_data, rows*cols*sizeof(float), cudaMemcpyDeviceToHost);
+	checkCUDAError("memcpy device to host");
+	
+	cudaFree(dev_data);
+	cudaFree(dev_fin_data);
+	
+	checkCUDAError("free");
+	
 }

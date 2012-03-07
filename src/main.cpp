@@ -3,90 +3,85 @@
 #include <iostream>
 #include "integral.h"
 
+#include <stdio.h>
+#include <time.h>
+
+
+
 using namespace cv;
 using namespace std; 
 
-void integral_image(Mat &img);
+Mat getImg(int argc, char** argv);
+Mat integral_image(Mat &img);
+void display_image(Mat &img, string title, int x=0, int y=0);
+
 
 int main( int argc, char** argv )
 { 
-	if( argc != 2) 
-	{
-	 cout <<" Usage: display_image ImageToLoadAndDisplay" << endl;
-	 return -1;
-	}
-	
-	Mat image;
-	image = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);	// Read the file
+	Mat image = getImg(argc, argv);
 
-	if(! image.data )                              // Check for invalid input
-	{
-		cout <<  "Could not open or find the image" << std::endl ;
-		return -1;
-	}
-	integral_image(image);
-	namedWindow( "Display window", CV_WINDOW_AUTOSIZE );// Create a window for display.
-	imshow( "Display window", image );                   // Show our image inside it.
+	Mat integral_img = integral_image(image);
+	
+	display_image(image, "Original");
+	display_image(integral_img, "Integral Image", image.rows);
 
 	waitKey(0);											 // Wait for a keystroke in the window
 	return 0;
 }
 
-void integral_image(Mat &img){
-	cout << test() << endl;
-	// for(int row=0; row < img.rows; ++row){
-	// 	for(int col=0; col < img.cols; ++col){
-	// 		// flt_img.data[row*img.step[0]+col*flt_img.step[1]] = img.data[row*img.step+col] + img.data[row*img.step+col-1] + img.data[(row-1)*img.step+col] - img.data[(row-1)*img.step+col-1];
-	// 		img.row(row).col(col) = 0.0;
-	// 	}
-	// }
+
+Mat getImg(int argc, char** argv){
+	// Check for filename
+	if( argc != 2) {
+	 cout <<" Usage: detect <image>" << endl;
+	 exit(-1);
+	}
+	
+	// Read the file
+	Mat image = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
+
+	// Check for invalid input
+	if(! image.data){
+		cout <<  "Could not open or find the image" << std::endl ;
+		exit(-1);
+	}
+	return image;
+}
+
+
+Mat integral_image(Mat &img){
+	img.convertTo(img, CV_32F, 1.0/255);
+	Mat int_img(img.rows+1, img.cols+1, CV_32F, 0.0f);
+	Mat cv_int_img(img.rows+1, img.cols+1, CV_32F, 0.0f);
+	Mat mask(int_img, Range(1, int_img.rows), Range(1, int_img.cols));
+	img.copyTo(mask);
+	
+	// OpenCV Integral IMG
+	clock_t start = clock();
+	integral(img, cv_int_img, CV_32F);
+	
+	cout << "OpenCV Intergral time: " << ((double)clock() - start) / CLOCKS_PER_SEC << endl;
+	
+	// CUDA Integral IMG
+	start = clock();
+	cuda_integrate_image((float*)int_img.data, int_img.rows, int_img.cols, int_img.step[0]/int_img.step[1]);
+	
+	cout << "CUDA Intergral time: " << ((double)clock() - start) / CLOCKS_PER_SEC << endl;
+	
+	normalize(int_img, int_img, 0, 1, NORM_MINMAX);
+	// normalize(cv_int_img, cv_int_img, 0, 1, NORM_MINMAX);
 	// 
-	// img.row(100).col(100) = 1.0;
+	// // Display Integral
 	// 
-	// Mat flt_img(img.rows, img.cols, CV_64FC1);
-	// Mat int_img(img.rows, img.cols, CV_64FC1);
 	// 
-	// img.convertTo(flt_img, CV_64FC1);
-	// integral(img, int_img, CV_64FC1);
-	//                 // Show our image inside it.
-	// 
-	// for(int row=1; row<img.rows; ++row){
-	// 	flt_img.row(row).col(0) += flt_img.row(row-1).col(0);
-	// }
-	// 
-	// for(int col=1; col<img.cols; ++col){
-	// 	flt_img.row(0).col(col) += flt_img.row(0).col(col-1);
-	// }
-	// 
-	// for(int row=1; row < img.rows; ++row){
-	// 	for(int col=1; col < img.cols; ++col){
-	// 		flt_img.row(row).col(col) = flt_img.row(row).col(col) + flt_img.row(row-1).col(col) + flt_img.row(row).col(col-1) - flt_img.row(row-1).col(col-1);
-	// 	}
-	// }
-	// double m;
-	// minMaxLoc(flt_img, NULL, &m);
-	// cout << m << endl;
-	// cout << numeric_limits<double>::max( ) << endl;
-	// for(int row=1; row < img.rows; ++row){
-	// 	for(int col=1; col < img.cols; ++col){
-	// 		// flt_img.data[row*img.step[0]+col*flt_img.step[1]] = img.data[row*img.step+col] + img.data[row*img.step+col-1] + img.data[(row-1)*img.step+col] - img.data[(row-1)*img.step+col-1];
-	// 		flt_img.row(row).col(col) = flt_img.row(row).col(col)/m;
-	// 	}
-	// }
-	// 
-	// minMaxLoc(int_img, NULL, &m);
-	// cout << m << endl;
-	// cout << numeric_limits<double>::max( ) << endl;
-	// for(int row=1; row < img.rows; ++row){
-	// 	for(int col=1; col < img.cols; ++col){
-	// 		// flt_img.data[row*img.step[0]+col*flt_img.step[1]] = img.data[row*img.step+col] + img.data[row*img.step+col-1] + img.data[(row-1)*img.step+col] - img.data[(row-1)*img.step+col-1];
-	// 		int_img.row(row).col(col) = int_img.row(row).col(col)/m;
-	// 	}
-	// }
-	// 
-	// namedWindow( "after Integral", CV_WINDOW_AUTOSIZE );// Create a window for display.
-	// imshow( "after Integral", flt_img );                   // Show our image inside it.
-	// 
-	// namedWindow( "Integral", CV_WINDOW_AUTOSIZE );// Create a window for display.
-	// imshow( "Integral", int_img );
+	// display_image(int_img, "Computed Integral", img.cols);
+	// display_image(cv_int_img, "OpenCV Integral", img.cols*2);
+	
+	return int_img;
+}
+
+void display_image(Mat &img, string title, int x, int y){
+	namedWindow(title); 
+	imshow(title, img );
+	cvMoveWindow(title.c_str(), x, y);
 }

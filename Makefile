@@ -12,15 +12,15 @@ clean:
 	rm detect *.o a.out
 	
 main.o: src/main.cpp src/integral.h
-	@g++ -c src/main.cpp $(CFLAGS)
+	@g++ -c src/main.cpp $(CFLAGS) -m32
 	@echo "Compiling main.cpp"
 
 integral.o: src/integral.cu src/integral.h
-	@nvcc -c src/integral.cu -m64
+	@nvcc -c src/integral.cu -m32
 	@echo "Compiling integral.cu"
 	
 
 detect: main.o integral.o
-	@g++ main.o integral.o $(LIBS) -o detect
+	@g++ main.o integral.o $(LIBS) -o detect -m32
 	@echo "\nLinking main.o, integral.o"
 	
