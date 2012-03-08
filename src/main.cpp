@@ -1,11 +1,11 @@
 #include <cv.h>
 #include <highgui.h>
 #include <iostream>
-#include "integral.h"
 
-#include <stdio.h>
 #include <time.h>
 
+#include "integral.h"
+#include "window_info.h"
 
 
 using namespace cv;
@@ -14,16 +14,20 @@ using namespace std;
 Mat getImg(int argc, char** argv);
 Mat integral_image(Mat &img);
 void display_image(Mat &img, string title, int x=0, int y=0);
+void detect_faces(Mat &integral_img);
 
 
 int main( int argc, char** argv )
 { 
 	Mat image = getImg(argc, argv);
-
 	Mat integral_img = integral_image(image);
+	
+	detect_faces(integral_img);
+	
 	
 	display_image(image, "Original");
 	display_image(integral_img, "Integral Image", image.rows);
+	
 
 	waitKey(0);											 // Wait for a keystroke in the window
 	return 0;
@@ -80,8 +84,22 @@ Mat integral_image(Mat &img){
 	return int_img;
 }
 
+
 void display_image(Mat &img, string title, int x, int y){
 	namedWindow(title); 
 	imshow(title, img );
 	cvMoveWindow(title.c_str(), x, y);
 }
+
+
+void detect_faces(Mat &integral_img){
+	WindowInfo winInfo(integral_img, 100);
+	cout 	<< "Window Size:     	" << winInfo.windowSize()		<< endl
+			<< "Number of Windows: 	" << winInfo.totalWindows()	<< endl;
+			
+	
+}
+
+
+
+

@@ -1,7 +1,9 @@
 #include <cv.h>
+#include <iostream>
 
 
 class WindowInfo{
+public:
 	WindowInfo(const cv::Mat mat, int wSize);
 	~WindowInfo();
 	int xWindows();
@@ -10,8 +12,16 @@ class WindowInfo{
 	int windowSize();
 	int* xPositions();
 	int* yPositions();
-	
-private:
+
+private:	
+
+	void computePositions();
+
 	const cv::Mat img;
 	int winSize;
+	
+	int* xPos;
+	int* yPos;
+	
+
 };
