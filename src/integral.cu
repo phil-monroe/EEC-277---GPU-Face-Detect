@@ -9,9 +9,6 @@
 
 #define THREADS_PER_BLOCK 32
 
-
-
-
 __global__ 
 void horizontal_kernel(float* data, int rows, int cols, size_t stride ) {
     // start from row 0
@@ -48,10 +45,10 @@ void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
 	cudaMemcpy(dev_data, data, rows*cols*sizeof(float), cudaMemcpyHostToDevice);
 	checkCUDAError("memcpy host to device");
 	
-	int num_blocks = rows < THREADS_PER_BLOCK ? 1 : rows/THREADS_PER_BLOCK + 1;
+	int num_blocks = rows/THREADS_PER_BLOCK;
 	
 	horizontal_kernel<<<num_blocks , THREADS_PER_BLOCK>>>(dev_data, rows, cols, stride);
-	num_blocks = cols < THREADS_PER_BLOCK ? 1 : cols/THREADS_PER_BLOCK + 1;
+	num_blocks = cols/THREADS_PER_BLOCK + 1;
 	cudaThreadSynchronize();
 	checkCUDAError("horizontal kernel");
 	
@@ -64,5 +61,4 @@ void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
 	
 	cudaFree(dev_data);	
 	checkCUDAError("free");
-	
 }
