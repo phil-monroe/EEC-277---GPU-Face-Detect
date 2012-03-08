@@ -5,8 +5,13 @@
 #include <string.h>
 
 #include "integral.h"
-#include "helpers.cu"
+#include "cuda_helpers.h"
 
-void cuda_test_classifier(int* winX, int* winY, size_t stride, int winSize, int featSize, float* intImg, bool* results){
+__device__
+void cuda_test_classifier(int* winXs, int* winYs, int winSize, int featSize, float* intImg, size_t stride, bool* results){
 	int thread = blockIdx.x * blockDim.x + threadIdx.x;
+	int winX = winXs[thread];
+	int winY = winYs[thread];
+	
+	results[thread] = thread%2 ? true : false;
 }

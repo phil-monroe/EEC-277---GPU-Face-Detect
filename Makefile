@@ -12,15 +12,28 @@ clean:
 	rm detect *.o a.out
 	
 main.o: src/main.cpp src/integral.h
+	@echo Compiling main.cpp
 	@g++ -c src/main.cpp $(CFLAGS) -m32
-	@echo "Compiling main.cpp"
+
+window_info.o: src/window_info.cpp src/window_info.h
+	@echo Compiling window_info.cpp
+	@g++ -c src/window_info.cpp $(CFLAGS) -m32
 
 integral.o: src/integral.cu src/integral.h
-	@nvcc -c src/integral.cu -m32
 	@echo "Compiling integral.cu"
+	@nvcc -c src/integral.cu -m32
+	
+	
+classifiers.o: src/classifiers.cu src/classifiers.h
+	@echo "Compiling classifiers.cu"
+	@nvcc -c src/classifiers.cu -m32
+	
+cuda_helpers.o: src/cuda_helpers.cu src/cuda_helpers.h
+	@echo "Compiling cuda_helpers.cu"
+	@nvcc -c src/cuda_helpers.cu -m32
 	
 
-detect: main.o integral.o
-	@g++ main.o integral.o $(LIBS) -o detect -m32
-	@echo "\nLinking main.o, integral.o"
+detect: main.o integral.o classifiers.o cuda_helpers.o
+	@echo "\nLinking..."
+	@g++ main.o integral.o classifiers.o cuda_helpers.o $(LIBS) -o detect -m32
 	

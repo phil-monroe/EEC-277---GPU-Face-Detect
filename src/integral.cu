@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "integral.h"
-#include "helpers.cu"
+#include "cuda_helpers.h"
 
 #define THREADS_PER_BLOCK 32
 
