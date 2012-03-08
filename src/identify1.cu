@@ -9,13 +9,12 @@
 
 __global__ 
 void ID1kernel(int* xVals, int* yVals, int windowSize, int scale, float* intImage, size_t stride, bool* results ) {
-	//Does the intImage need to be float** so we can address into it twice or is this how it works in Cuda
 
 	int threadNum = blockIdx.x * blockDim.x + threadIdx.x;
 	int startX = xVals[threadNum];
 	int startY = yVals[threadNum];
-	for (int i = startX; i < startX+windowSize; i = i+SKIP_AMOUNT){ //use SKIP_AMOUNT * scale for it to scale up as identifier scales
-		for (int j = startY; j < startY + windowSize; j = j+SKIP_AMOUNT){
+	for (int i = startX; (i+BASE_WIDTH*scale) < (startX+windowSize); i = i+SKIP_AMOUNT){ //use SKIP_AMOUNT * scale for it to scale up as identifier scales
+		for (int j = startY; (j+BASE_HEIGHT*scale) < (startY + windowSize); j = j+SKIP_AMOUNT){
 			// take important corners from image
 			int upperLeft 		= intImage[i*stride + j];
 			int upperRight 		= intImage[(i+BASE_WIDTH*scale)*stride + j];
