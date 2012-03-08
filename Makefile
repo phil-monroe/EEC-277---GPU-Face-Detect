@@ -33,7 +33,7 @@ cuda_helpers.o: src/cuda_helpers.cu src/cuda_helpers.h
 	@nvcc -c src/cuda_helpers.cu -m32
 	
 
-detect: main.o integral.o classifiers.o cuda_helpers.o
+detect: main.o integral.o classifiers.o cuda_helpers.o window_info.o
 	@echo "\nLinking..."
-	@g++ main.o integral.o classifiers.o cuda_helpers.o $(LIBS) -o detect -m32
+	@g++ main.o integral.o classifiers.o cuda_helpers.o window_info.o $(LIBS) -o detect -m32
 	
