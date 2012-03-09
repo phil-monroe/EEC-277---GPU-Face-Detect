@@ -1,15 +1,17 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
-#include "identify1.h"
+#include "identify3.h"
 
-#define BASE_WIDTH = 8
-#define BASE_HEIGHT = 4
+#define BASE_WIDTH = 6
+#define BASE_HEIGHT = 6
+#define MID_WIDTH = 2
 #define THRESHOLD = 0.85 //definitely needs to be changed
 #define SKIP_AMOUNT = 4 //amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
-//This identifier is 2 horizontal bars with light (positive) on top and dark (negative) on bottom
+
+//This identifier is 3 vertical bars going dark light dark
 __global__ 
-void ID1kernel(int* xVals, int* yVals, int windowSize, int scale, float* intImage, size_t stride, bool* results ) {
+void ID3kernel(int* xVals, int* yVals, int windowSize, int scale, float* intImage, size_t stride, bool* results ) {
 
 	int threadNum = blockIdx.x * blockDim.x + threadIdx.x;
 	int startX = xVals[threadNum];
@@ -19,13 +21,17 @@ void ID1kernel(int* xVals, int* yVals, int windowSize, int scale, float* intImag
 			// take important corners from image
 			int upperLeft 		= intImage[i*stride + j];
 			int upperRight 		= intImage[(i+BASE_WIDTH*scale)*stride + j];
-			int midLeft 		= intImage[i*stride + j+(BASE_HEIGHT*scale>>1)];
-			int midRight 		= intImage[(i+BASE_WIDTH*scale)*stride + j+(BASE_HEIGHT*scale>>1)];
+			
+			int midLeftTop 		= intImage[(i+BASE_WIDTH*scale>>1 - MID_WIDTH*scale>>1)*stride + j];
+			int midRightTop		= intImage[(i+BASE_WIDTH*scale>>1 + MID_WIDTH*scale>>1)*stride + j];
+			int midLeftBot 		= intImage[(i+BASE_WIDTH*scale>>1 - MID_WIDTH*scale>>1)*stride + j+BASE_HEIGHT*scale];
+			int midRightBot		= intImage[(i+BASE_WIDTH*scale>>1 + MID_WIDTH*scale>>1)*stride + j+BASE_HEIGHT*scale];
+			
 			int lowerLeft 		= intImage[i*stride + j+(BASE_HEIGHT*scale)];
 			int lowerRight 		= intImage[(i+BASE_WIDTH*scale)*stride + j+(BASE_HEIGHT*scale)];
 			
 			//calculate fit value based on identifier (hard-coded)
-			int fitValue = midRight<<1-midLeft<<1 + upperLeft - lowerRight - upperRight + lowerLeft;
+			int fitValue = midRightBot + midLeftTop - midRightTop - midLeftBot - lowerRight - upperLeft + upperRight + lowerLeft;
 			float goodnessValue = fitValue*1.0f/(BASE_WIDTH*scale*BASE_HEIGHT*scale); // goodnessValue = fit/area
 			
 			results[i*stride + j] = (goodnessValue>THRESHOLD);
