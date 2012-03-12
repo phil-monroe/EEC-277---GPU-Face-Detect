@@ -31,7 +31,7 @@ void ID3kernel(int* xVals, int* yVals, int windowSize, int scale, float* intImag
 			int lowerRight 		= intImage[(i+BASE_WIDTH*scale)*stride + j+(BASE_HEIGHT*scale)];
 			
 			//calculate fit value based on identifier (hard-coded)
-			int fitValue = midRightBot + midLeftTop - midRightTop - midLeftBot - lowerRight - upperLeft + upperRight + lowerLeft;
+			int fitValue = (midRightBot + midLeftTop - midRightTop - midLeftBot)<<1 - lowerRight - upperLeft + upperRight + lowerLeft;
 			float goodnessValue = fitValue*1.0f/(BASE_WIDTH*scale*BASE_HEIGHT*scale); // goodnessValue = fit/area
 			
 			results[i*stride + j] = (goodnessValue>THRESHOLD);
