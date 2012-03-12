@@ -2,17 +2,18 @@
 #include "window_info.h"
 
 
-WindowInfo::WindowInfo(const cv::Mat mat, int wSize):img(mat){
+WindowInfo::WindowInfo(cv::Mat mat, int wSize):img(mat){
+	std::cout << "Image Size " << ": (" << img.rows << " , " << img.cols << ")" << std::endl;
+	
 	winSize = wSize;
-	xPos = new int[totalWindows()];
-	yPos = new int[totalWindows()];
+	offset = winSize/2;
+	offsets = new int[totalWindows()];
 	computePositions();
 }
 
 
 WindowInfo::~WindowInfo(){
-	delete[] xPos;
-	delete[] yPos;
+	delete offsets;
 }
 
 
@@ -26,8 +27,25 @@ int WindowInfo::yWindows(){
 }
 
 
+int WindowInfo::xOffsetWindows(){
+	return (img.cols + offset)/windowSize() -1;
+}
+
+
+int WindowInfo::yOffsetWindows(){
+	return (img.rows + offset)/windowSize()-1;
+}
+
+int WindowInfo::xyOffsetWindows(){
+	return xOffsetWindows() * yOffsetWindows();
+}
+
+
 int WindowInfo::totalWindows(){
-	return xWindows() * yWindows();
+	return 	xWindows() * yWindows() 
+			 + xOffsetWindows() * yWindows() 
+			 + xWindows() * yOffsetWindows() 
+			 + xyOffsetWindows();
 }
 
 
@@ -35,24 +53,23 @@ int WindowInfo::windowSize(){
 	return winSize;
 }
 
-
-int* WindowInfo::xPositions(){
-	return xPos;
+int WindowInfo::windowOffset(){
+	return offset;
 }
 
-
-int* WindowInfo::yPositions(){
-	return yPos;
+int* WindowInfo::subWindowOffsets(){
+	return offsets;
 }
 
 void WindowInfo::computePositions(){
-	for(int xWin = 0; xWin < xWindows(); ++xWin){
-		for(int yWin = 0; yWin < yWindows(); ++yWin){
-			int win = xWin*xWindows() + yWin;
-			xPos[win] = xWin*windowSize();
-			yPos[win] = yWin*windowSize();
+	int win = 0;
+	for(int i = 0; i <= img.rows - windowSize(); i+= windowOffset()){
+		for(int j = 0; j <= img.cols - windowSize(); j += windowOffset()){
 			
-			std::cout << "Window " << win << ": (" << xPos[win] << " , " << yPos[win] << ")" << std::endl;
+			offsets[win] = i*img.cols + j; 
+			
+			std::cout << "Window " << win << ": (" << i << ", " << j << ") " << offsets[win]  << std::endl;
+			win++;
 		}
 	}
 }

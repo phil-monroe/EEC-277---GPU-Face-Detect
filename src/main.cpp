@@ -95,9 +95,18 @@ void display_image(Mat &img, string title, int x, int y){
 void detect_faces(Mat &integral_img){
 	WindowInfo winInfo(integral_img, 100);
 	cout 	<< "Window Size:     	" << winInfo.windowSize()		<< endl
-			<< "Number of Windows: 	" << winInfo.totalWindows()	<< endl;
+			<< "Number of Windows: 	" << winInfo.totalWindows()	<< endl
+			<< "Number of xWindows: 	" << winInfo.xWindows()	<< endl
+			<< "Number of yWindows: 	" << winInfo.yWindows()	<< endl
+			<< "Number of xOffsetWindows: 	" << winInfo.xOffsetWindows()	<< endl
+			<< "Number of yOffsetWindows: 	" << winInfo.yOffsetWindows()	<< endl
+			<< "Number of xyOffsetWindows: 	" << winInfo.xyOffsetWindows()	<< endl;
 			
-	
+	int* subWindows = winInfo.subWindowOffsets();
+	float* img_data = (float*) integral_img.data;
+	for(int i = 0; i < winInfo.totalWindows(); ++i){
+		img_data[subWindows[i]] = 0.0;
+	}
 }
 
 

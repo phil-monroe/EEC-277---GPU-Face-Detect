@@ -8,20 +8,23 @@ public:
 	~WindowInfo();
 	int xWindows();
 	int yWindows();
+	int xOffsetWindows();
+	int yOffsetWindows();
+	int xyOffsetWindows();
 	int totalWindows();
 	int windowSize();
-	int* xPositions();
-	int* yPositions();
+	int windowOffset();
+	int* subWindowOffsets();
 
 private:	
 
 	void computePositions();
 
-	const cv::Mat img;
+	cv::Mat img;
 	int winSize;
+	int offset;
 	
-	int* xPos;
-	int* yPos;
+	int* offsets;
 	
 
 };
