@@ -5,7 +5,9 @@
 #include <time.h>
 
 #include "integral.h"
+#include "cuda_detect_faces.h"
 #include "window_info.h"
+
 
 
 using namespace cv;
@@ -104,9 +106,11 @@ void detect_faces(Mat &integral_img){
 			
 	int* subWindows = winInfo.subWindowOffsets();
 	float* img_data = (float*) integral_img.data;
-	for(int i = 0; i < winInfo.totalWindows(); ++i){
-		img_data[subWindows[i]] = 0.0;
-	}
+	// for(int i = 0; i < winInfo.totalWindows(); ++i){
+	// 	img_data[subWindows[i]] = 0.0;
+	// }
+	
+	cuda_detect_faces(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize());
 }
 
 
