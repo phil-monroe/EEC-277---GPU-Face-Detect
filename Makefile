@@ -1,6 +1,7 @@
 CFLAGS	= $(shell pkg-config --cflags opencv)
+CFLAGS  += -m32 -I./include
 LIBS		= $(shell pkg-config --libs opencv)
-LIBS	  += -L/usr/local/cuda/lib -lcudart
+LIBS	  += -L/usr/local/cuda/lib -lcudart -L./lib -lcudpp
 
 all: detect
 	
@@ -9,31 +10,34 @@ run: all test.jpg
 	./detect test.jpg
 	
 clean:
-	rm detect *.o a.out
+	- rm detect *.o a.out
 	
-main.o: src/main.cpp src/integral.h
+main.o: src/main.cpp src/integral.h src/cuda_detect_faces.h
 	@echo Compiling main.cpp
-	@g++ -c src/main.cpp $(CFLAGS) -m32
+	@g++ -c src/main.cpp $(CFLAGS)
 
 window_info.o: src/window_info.cpp src/window_info.h
 	@echo Compiling window_info.cpp
-	@g++ -c src/window_info.cpp $(CFLAGS) -m32
+	@g++ -c src/window_info.cpp $(CFLAGS)
 
-integral.o: src/integral.cu src/integral.h
+integral.o: src/integral.cu src/integral.h cuda_helpers.o
 	@echo "Compiling integral.cu"
-	@nvcc -c src/integral.cu -m32
+	@nvcc -c src/integral.cu $(CFLAGS)
 	
 	
-classifiers.o: src/classifiers.cu src/classifiers.h
-	@echo "Compiling classifiers.cu"
-	@nvcc -c src/classifiers.cu -m32
+identify1.o: src/identify1.cu cuda_helpers.o
+	@echo "Compiling identify1.cu"
+	@nvcc -c src/identify1.cu $(CFLAGS)
 	
 cuda_helpers.o: src/cuda_helpers.cu src/cuda_helpers.h
 	@echo "Compiling cuda_helpers.cu"
-	@nvcc -c src/cuda_helpers.cu -m32
+	@nvcc -c src/cuda_helpers.cu $(CFLAGS)
 	
+cuda_detect_faces.o: src/cuda_detect_faces.h src/cuda_detect_faces.cu identify1.o
+	@echo "Compiling cuda_detect_faces.cu"
+	@nvcc -c src/cuda_detect_faces.cu $(CFLAGS)
 
-detect: main.o integral.o classifiers.o cuda_helpers.o window_info.o
+detect: main.o integral.o cuda_detect_faces.o cuda_helpers.o window_info.o
 	@echo "\nLinking..."
-	@g++ main.o integral.o classifiers.o cuda_helpers.o window_info.o $(LIBS) -o detect -m32
+	@g++ main.o integral.o cuda_detect_faces.o cuda_helpers.o window_info.o $(LIBS) -o detect -m32
 	
