@@ -67,8 +67,6 @@ void WindowInfo::computePositions(){
 		for(int j = 0; j <= img.cols - windowSize(); j += windowOffset()){
 			
 			offsets[win] = i*img.cols + j; 
-			
-			std::cout << "Window " << win << ": (" << i << ", " << j << ") " << offsets[win]  << std::endl;
 			win++;
 		}
 	}

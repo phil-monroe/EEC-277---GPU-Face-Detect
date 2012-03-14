@@ -16,7 +16,7 @@ using namespace std;
 Mat getImg(int argc, char** argv);
 Mat integral_image(Mat &img);
 void display_image(Mat &img, string title, int x=0, int y=0);
-void detect_faces(Mat &integral_img);
+Mat detect_faces(Mat &integral_img);
 
 
 int main( int argc, char** argv )
@@ -24,11 +24,15 @@ int main( int argc, char** argv )
 	Mat image = getImg(argc, argv);
 	Mat integral_img = integral_image(image);
 	
-	detect_faces(integral_img);
+	Mat heat_map = detect_faces(integral_img);
+	
+	normalize(integral_img, integral_img, 0, 1, NORM_MINMAX);
+	normalize(heat_map, heat_map, 0, 1, NORM_MINMAX);
 	
 	
 	display_image(image, "Original");
 	display_image(integral_img, "Integral Image", image.rows);
+	display_image(heat_map, "Heat Map", 0, image.cols);
 	
 
 	waitKey(0);											 // Wait for a keystroke in the window
@@ -74,7 +78,7 @@ Mat integral_image(Mat &img){
 	
 	cout << "CUDA Intergral time: " << ((double)clock() - start) / CLOCKS_PER_SEC << endl;
 	
-	normalize(int_img, int_img, 0, 1, NORM_MINMAX);
+	// normalize(int_img, int_img, 0, 1, NORM_MINMAX);
 	// normalize(cv_int_img, cv_int_img, 0, 1, NORM_MINMAX);
 	// 
 	// // Display Integral
@@ -94,23 +98,18 @@ void display_image(Mat &img, string title, int x, int y){
 }
 
 
-void detect_faces(Mat &integral_img){
+Mat detect_faces(Mat &integral_img){
 	WindowInfo winInfo(integral_img, 100);
-	cout 	<< "Window Size:     	" << winInfo.windowSize()		<< endl
-			<< "Number of Windows: 	" << winInfo.totalWindows()	<< endl
-			<< "Number of xWindows: 	" << winInfo.xWindows()	<< endl
-			<< "Number of yWindows: 	" << winInfo.yWindows()	<< endl
-			<< "Number of xOffsetWindows: 	" << winInfo.xOffsetWindows()	<< endl
-			<< "Number of yOffsetWindows: 	" << winInfo.yOffsetWindows()	<< endl
-			<< "Number of xyOffsetWindows: 	" << winInfo.xyOffsetWindows()	<< endl;
+	cout 	<< "Window Size:     	" << winInfo.windowSize()		<< endl;
+	Mat heat_map(integral_img.rows, integral_img.cols, CV_32F, 0.0f);
 			
 	int* subWindows = winInfo.subWindowOffsets();
 	float* img_data = (float*) integral_img.data;
-	// for(int i = 0; i < winInfo.totalWindows(); ++i){
-	// 	img_data[subWindows[i]] = 0.0;
-	// }
+	float* heat_data = (float*) heat_map.data;
+
 	
-	cuda_detect_faces(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize());
+	cuda_detect_faces(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize(), heat_data);
+	return heat_map;
 }
 
 
