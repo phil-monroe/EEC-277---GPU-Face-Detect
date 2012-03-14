@@ -7,7 +7,8 @@ KERNELS = 	src/kernels/identify1.cu \
 				src/kernels/identify2.cu \
 				src/kernels/identify3.cu \
 				src/kernels/identify4.cu \
-				src/kernels/identify_glasses.cu
+				src/kernels/identify_glasses.cu \
+				src/kernels/brute_merge_results.cu
 
 all: detect
 	

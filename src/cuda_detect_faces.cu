@@ -13,6 +13,10 @@
 #include "kernels/identify2.cu"
 #include "kernels/identify3.cu"
 #include "kernels/identify4.cu"
+// #include "kernels/identify_glasses.cu"
+#include "kernels/brute_merge_results.cu"
+
+
 
 
 #define TH_PER_BLOCK 64
@@ -288,6 +292,8 @@ void cuda_detect_faces2(float* intImg, int rows, int cols, size_t stride, int* w
 	cudaMemset(faceDetected_d[1], 0, nValidSubWindows*sizeof(int));
 	cudaMemset(faceDetected_d[2], 0, nValidSubWindows*sizeof(int));
 	cudaMemset(faceDetected_d[3], 0, nValidSubWindows*sizeof(int));
+
+	
 	
 	checkCUDAError("bool array");
 	
@@ -350,13 +356,23 @@ void cuda_detect_faces2(float* intImg, int rows, int cols, size_t stride, int* w
 														);
 	}
 	kernel_footer("All kernels", kernel_start);
-
+	printf("\n");
+	// Compile Results ---------------------------------------------------------
+	kernel_heading("Merge Results", blocks, th_per_block, threads, nValidSubWindows);
+	kernel_start = clock();
+	brute_merge_results<<<blocks, th_per_block>>>(	faceDetected_d[0],
+	 																faceDetected_d[1],
+																	faceDetected_d[2],
+																	faceDetected_d[3],
+																	nValidSubWindows);
+	kernel_footer("Merge Results", kernel_start);
 	
-	
+	// Determine compute matches
+	nValidSubWindows = compact(winOffsets_d, faceDetected_d[0],  nValidSubWindows);
 	
 	
 	// Results -----------------------------------------------------------------
-	printf("\n\nResults\n\n");
+	printf("Results\n\n");
 	printf("Completed test in %f seconds\n", ((double)clock() - test_start) / CLOCKS_PER_SEC);
 	if(nValidSubWindows > 0){
 		printf("A face was detected\n");
@@ -402,6 +418,8 @@ void debugResults(int* facesDetected_d, float* results_d, int nValidSubWindows){
 
 
 int compact(int* winOffsets_d, int* faceDetected_d, int nValidSubWindows){
+	clock_t clk = clock();
+	
 	// Cast to thrust device pointers
 	thrust::device_ptr<int> offsets_ptr(winOffsets_d);
 	thrust::device_ptr<int> detected_ptr(faceDetected_d);
@@ -411,6 +429,8 @@ int compact(int* winOffsets_d, int* faceDetected_d, int nValidSubWindows){
 	
 	// Compute the length of compacted array
 	int len = new_end - offsets_ptr;
+	
+	printf("Compacting completed in %f seconds\n", ((double)clock() - clk) / CLOCKS_PER_SEC);
 	
 	printf("Possible faces: %d\n\n", len);
 	
