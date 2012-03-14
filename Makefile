@@ -29,7 +29,7 @@ cuda_helpers.o: src/cuda_helpers.cu src/cuda_helpers.h
 	@echo "Compiling cuda_helpers.cu"
 	@nvcc -c src/cuda_helpers.cu $(CFLAGS)
 	
-cuda_detect_faces.o: src/cuda_detect_faces.h src/cuda_detect_faces.cu src/identify1.cu src/identify2.cu
+cuda_detect_faces.o: src/cuda_detect_faces.h src/cuda_detect_faces.cu src/identify1.cu src/identify2.cu src/identify3.cu
 	@echo "Compiling cuda_detect_faces.cu"
 	@nvcc -c src/cuda_detect_faces.cu $(CFLAGS)
 

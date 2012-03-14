@@ -35,9 +35,9 @@ int main( int argc, char** argv )
 	
 	
 	display_image(image, "Original");
-	display_image(integral_img, "Integral Image", image.rows);
-	display_image(heat_map, "Heat Map", 0, image.cols);
-	display_image(heat_img, "Heat Image", image.rows, image.cols);
+	display_image(integral_img, "Integral Image", image.cols);
+	display_image(heat_map, "Heat Map", 0, image.rows+40);
+	display_image(heat_img, "Heat Image", image.cols, image.rows+40);
 	
 
 	waitKey(0);											 // Wait for a keystroke in the window

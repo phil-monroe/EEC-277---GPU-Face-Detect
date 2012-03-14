@@ -11,6 +11,7 @@
 #include "cuda_helpers.h"
 #include "identify1.cu"
 #include "identify2.cu"
+#include "identify3.cu"
 
 
 #define TH_PER_BLOCK 64
@@ -71,6 +72,8 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	checkCUDAError("debug results");
 	
 	
+	
+	//==========================================================================
 	// Run ID1 -----------------------------------------------------------------
 	printf("\n\n");
 	printf("Running ID1 --------\n");
@@ -103,6 +106,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	// Prepare for next run ----------------------------------------------------
 	cudaMemset(faceDetected_d, 0, nValidSubWindows*sizeof(float));
 	cudaMemset(results_d, 0, nValidSubWindows*sizeof(float));
+	
 	
 	
 	//==========================================================================
@@ -139,19 +143,46 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	// Prepare for next run
 	cudaMemset(faceDetected_d, 0, nValidSubWindows*sizeof(float));
 	cudaMemset(results_d, 0, nValidSubWindows*sizeof(float));
+
+
+
+	//==========================================================================
+	// Run ID3 -----------------------------------------------------------------
+	printf("\n\n");
+	printf("Running ID3 --------\n");
+	printf("Blocks:   %d\n", blocks);
+	printf("Th/Block: %d\n", th_per_block);
+	printf("Threads:  %d\n", threads);
+	printf("Windows:  %d\n", nValidSubWindows);
+	
+	start = clock();
+	for(int i = 2; i < 2+N_SCALES; ++i){
+		ID3kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
+														stride, 						//	Stride
+														winOffsets_d, 				//	Sub-Window Offsets
+														winSize, 					//	Sub-Window Size
+														nValidSubWindows, 		//	Number of Sub Windows
+														winSize/(5*(i)), 			// Scale of the feature
+														faceDetected_d, 			//	Array to hold if a face was detected
+														results_d,					//	Array to hold maximum feature value for each sub window
+														heatMap_d					// Heat map
+														);
+	}
+	cudaThreadSynchronize();
+	printf("Completed in %f seconds\n", ((double)clock() - start) / CLOCKS_PER_SEC);
+	checkCUDAError("kernel ID3");
+
+	debugResults(faceDetected_d, results_d, nValidSubWindows);
+	
+	
 	// Compact
+	nValidSubWindows = compact(winOffsets_d, faceDetected_d,  nValidSubWindows);
+	printf("Possible faces: %d\n", nValidSubWindows);
 	
-	// Run ID3
-	
-	// Compact
-	
-	// Run ID4
-	
-	// Compact
-	
-	// Run ID5
-	
-	// Compact
+	// Prepare for next run
+	cudaMemset(faceDetected_d, 0, nValidSubWindows*sizeof(float));
+	cudaMemset(results_d, 0, nValidSubWindows*sizeof(float));
+
 
 
 	// Cleanup
