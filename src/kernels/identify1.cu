@@ -3,7 +3,7 @@
 
 #define ID1_BASE_WIDTH			8
 #define ID1_BASE_HEIGHT			4
-#define ID1_THRESHOLD			100 	//definitely needs to be changed
+#define ID1_THRESHOLD			.04f 	//definitely needs to be changed
 #define ID1_SKIP_AMOUNT			4 			//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 //This identifier is 2 horizontal bars with light (positive) on top and dark (negative) on bottom
@@ -32,8 +32,8 @@ void ID1kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 				}
 			}
 		}
-		float goodnessValue = maxFitValue;//(ID1_BASE_WIDTH*scale*ID1_BASE_HEIGHT*scale); // goodnessValue = fit/area
-		// results[threadNum] = goodnessValue;
+		float goodnessValue = maxFitValue/(ID1_BASE_WIDTH*scale*ID1_BASE_HEIGHT*scale); // goodnessValue = fit/area
+		results[threadNum] = goodnessValue;
 		
 		if(goodnessValue > ID1_THRESHOLD){
 			faceDetected[threadNum] = 1;

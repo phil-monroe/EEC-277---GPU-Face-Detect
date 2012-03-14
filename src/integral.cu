@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "integral.h"
 #include "cuda_helpers.h"
@@ -37,7 +38,7 @@ void vertical_kernel(float* data, int rows, int cols, size_t stride ) {
 
 
 
-void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
+double cuda_integrate_image(float* data, int rows, int cols, size_t stride){
 	float *dev_data;
 	cudaMalloc( &dev_data, rows*cols*sizeof(float));
 	checkCUDAError("malloc");
@@ -47,13 +48,15 @@ void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
 	
 	int num_blocks = rows/THREADS_PER_BLOCK;
 	
+	clock_t start = clock();
 	horizontal_kernel<<<num_blocks , THREADS_PER_BLOCK>>>(dev_data, rows, cols, stride);
 	num_blocks = cols/THREADS_PER_BLOCK + 1;
 	cudaThreadSynchronize();
-	checkCUDAError("horizontal kernel");
+	// checkCUDAError("horizontal kernel");
 	
 	vertical_kernel<<<num_blocks , THREADS_PER_BLOCK>>>(dev_data, rows, cols, stride);
 	cudaThreadSynchronize();
+	double ex_time = ((double)clock() - start)/ CLOCKS_PER_SEC;
 	checkCUDAError("vertical kernel");
 	
 	cudaMemcpy(data, dev_data, rows*cols*sizeof(float), cudaMemcpyDeviceToHost);
@@ -61,4 +64,6 @@ void cuda_integrate_image(float* data, int rows, int cols, size_t stride){
 	
 	cudaFree(dev_data);	
 	checkCUDAError("free");
+	
+	return ex_time;
 }

@@ -3,7 +3,7 @@
 
 #define ID2_BASE_WIDTH			8
 #define ID2_BASE_HEIGHT			4
-#define ID2_THRESHOLD			100	//definitely needs to be changed
+#define ID2_THRESHOLD			.06f	//definitely needs to be changed
 #define ID2_SKIP_AMOUNT			4 			//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 //This identifier is 2 horizontal bars with dark (negative) on top and light (positive) on bottom
@@ -32,17 +32,17 @@ void ID2kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 				}
 			}
 		}
-		float goodnessValue = maxFitValue;//(ID2_BASE_WIDTH*scale*ID2_BASE_HEIGHT*scale); // goodnessValue = fit/area
-		// results[threadNum] = goodnessValue;
+		float goodnessValue = maxFitValue/(ID2_BASE_WIDTH*scale*ID2_BASE_HEIGHT*scale); // goodnessValue = fit/area
+		results[threadNum] = goodnessValue;
 
 		if(goodnessValue > ID2_THRESHOLD){
 			faceDetected[threadNum] = 1;
 
-			// for(int i = 0; i < windowSize; ++i){
-			// 	for(int j = 0; j < windowSize; ++j){
-			// 		heatMap[offsets[threadNum] + i*stride + j] = heatMap[offsets[threadNum] + i*stride + j] + 1.0f;
-			// 	}
-			// }
+			for(int i = 0; i < windowSize; ++i){
+				for(int j = 0; j < windowSize; ++j){
+					heatMap[offsets[threadNum] + i*stride + j] = heatMap[offsets[threadNum] + i*stride + j] + 1.0f;
+				}
+			}
 		}
 	}
 }

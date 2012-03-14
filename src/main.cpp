@@ -78,10 +78,9 @@ Mat integral_image(Mat &img){
 	cout << "OpenCV Intergral time: " << ((double)clock() - start) / CLOCKS_PER_SEC << endl;
 	
 	// CUDA Integral IMG
-	start = clock();
-	cuda_integrate_image((float*)int_img.data, int_img.rows, int_img.cols, int_img.step[0]/int_img.step[1]);
+	double ex_time = cuda_integrate_image((float*)int_img.data, int_img.rows, int_img.cols, int_img.step[0]/int_img.step[1]);
 	
-	cout << "CUDA Intergral time: " << ((double)clock() - start) / CLOCKS_PER_SEC << endl;
+	cout << "CUDA Intergral time: " << ex_time << endl;
 	
 	// normalize(int_img, int_img, 0, 1, NORM_MINMAX);
 	// normalize(cv_int_img, cv_int_img, 0, 1, NORM_MINMAX);
@@ -104,7 +103,8 @@ void display_image(Mat &img, string title, int x, int y){
 
 
 Mat detect_faces(Mat &integral_img){
-	WindowInfo winInfo(integral_img, 100);
+	int small = min(integral_img.rows, integral_img.cols);
+	WindowInfo winInfo(integral_img, small/3);
 	cout 	<< "Window Size:     	" << winInfo.windowSize()		<< endl;
 	Mat heat_map(integral_img.rows, integral_img.cols, CV_32F, 0.0f);
 			

@@ -4,7 +4,7 @@
 #define ID3_BASE_WIDTH		6	
 #define ID3_BASE_HEIGHT		6
 #define ID3_MID_WIDTH		2
-#define ID3_THRESHOLD		400	//definitely needs to be changed
+#define ID3_THRESHOLD		.15f	//definitely needs to be changed
 #define ID3_SKIP_AMOUNT		4 		//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 
@@ -34,17 +34,19 @@ void ID3kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 			
 				//calculate fit value based on identifier (hard-coded)
 				// float fitValue = (midRightBot + midLeftTop - midRightTop - midLeftBot)*2.0 - lowerRight - upperLeft + upperRight + lowerLeft;
-				float fitValue = lowerRight - lowerLeft - upperRight + upperLeft - 2.0*(midRightBot - midLeftBot - midRightTop + midLeftTop);
+				float fitValue = 2.0*(midRightBot - midLeftBot - midRightTop + midLeftTop) - (lowerRight - lowerLeft - upperRight + upperLeft) ;
 				
+				if(fitValue < 0)	
+					fitValue = -fitValue;
 				
 				if(fitValue > maxFitValue){
 					maxFitValue = fitValue;
 				}
 			}
 		}
-		float goodnessValue = maxFitValue; //*1.0f/(ID3_BASE_WIDTH*scale*ID3_BASE_HEIGHT*scale); // goodnessValue = fit/area
+		float goodnessValue = maxFitValue/(ID3_BASE_WIDTH*scale*ID3_BASE_HEIGHT*scale); // goodnessValue = fit/area
 	
-		// results[threadNum] = goodnessValue;
+		results[threadNum] = goodnessValue;
 		
 		if(goodnessValue > ID3_THRESHOLD){
 			faceDetected[threadNum] = 1;

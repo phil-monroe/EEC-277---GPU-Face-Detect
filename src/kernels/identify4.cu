@@ -4,7 +4,7 @@
 #define ID4_BASE_WIDTH		6
 #define ID4_BASE_HEIGHT		6
 #define ID4_MID_WIDTH		2
-#define ID4_THRESHOLD		500		//definitely needs to be changed
+#define ID4_THRESHOLD		.15f		//definitely needs to be changed
 #define ID4_SKIP_AMOUNT		4			//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 //This identifier is 3 vertical bars going light dark light
@@ -40,9 +40,9 @@ void ID4kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 				}
 			}
 		}
-		float goodnessValue = maxFitValue; //*1.0f/(ID4_BASE_WIDTH*scale*ID4_BASE_HEIGHT*scale); // goodnessValue = fit/area
+		float goodnessValue = maxFitValue/(ID4_BASE_WIDTH*scale*ID4_BASE_HEIGHT*scale); // goodnessValue = fit/area
 	
-		// results[threadNum] = goodnessValue;
+		results[threadNum] = goodnessValue;
 		
 		if(goodnessValue > ID4_THRESHOLD){
 			faceDetected[threadNum] = 1;
