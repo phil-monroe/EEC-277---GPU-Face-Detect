@@ -22,6 +22,8 @@
 
 void debugResults(int* facesDetected_d, float* results_d, int nValidSubWindows);
 int compact(int* winOffsets_d, int* faceDetected_d,  int nValidSubWindows);
+void kernel_heading(char* heading, int blocks, int th_per_block, int threads, int nValidSubWindows);
+
 
 
 void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* winOffsets, int numWindows, int winSize, float* heatMap){
@@ -77,13 +79,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	
 	//==========================================================================
 	// Run ID1 -----------------------------------------------------------------
-	printf("\n\n");
-	printf("Running ID1 --------\n");
-	printf("Blocks:   %d\n", blocks);
-	printf("Th/Block: %d\n", th_per_block);
-	printf("Threads:  %d\n", threads);
-	printf("Windows:  %d\n", nValidSubWindows);
-	
+	kernel_heading("ID1", blocks, th_per_block, threads, nValidSubWindows);
 	kernel_start = clock();
 	for(int i = 2; i < 2+N_SCALES; ++i){
 		ID1kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
@@ -114,13 +110,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	
 	//==========================================================================
 	// Run ID2 -----------------------------------------------------------------
-	printf("\n\n");
-	printf("Running ID2 --------\n");
-	printf("Blocks:   %d\n", blocks);
-	printf("Th/Block: %d\n", th_per_block);
-	printf("Threads:  %d\n", threads);
-	printf("Windows:  %d\n", nValidSubWindows);
-	
+	kernel_heading("ID2", blocks, th_per_block, threads, nValidSubWindows);
 	kernel_start = clock();
 	for(int i = 2; i < 2+N_SCALES; ++i){
 		ID2kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
@@ -150,13 +140,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 
 	//==========================================================================
 	// Run ID3 -----------------------------------------------------------------
-	printf("\n\n");
-	printf("Running ID3 --------\n");
-	printf("Blocks:   %d\n", blocks);
-	printf("Th/Block: %d\n", th_per_block);
-	printf("Threads:  %d\n", threads);
-	printf("Windows:  %d\n", nValidSubWindows);
-	
+	kernel_heading("ID3", blocks, th_per_block, threads, nValidSubWindows);
 	kernel_start = clock();
 	for(int i = 2; i < 2+N_SCALES; ++i){
 		ID3kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
@@ -186,13 +170,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	
 	//==========================================================================
 	// Run ID4 -----------------------------------------------------------------
-	printf("\n\n");
-	printf("Running ID4 --------\n");
-	printf("Blocks:   %d\n", blocks);
-	printf("Th/Block: %d\n", th_per_block);
-	printf("Threads:  %d\n", threads);
-	printf("Windows:  %d\n", nValidSubWindows);
-	
+	kernel_heading("ID4", blocks, th_per_block, threads, nValidSubWindows);
 	kernel_start = clock();
 	for(int i = 2; i < 2+N_SCALES; ++i){
 		ID4kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
@@ -239,6 +217,143 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	checkCUDAError("cudaFree");
 }
 
+void cuda_detect_faces2(float* intImg, int rows, int cols, size_t stride, int* winOffsets, int numWindows, int winSize, float* heatMap){
+	
+	// Initialize kernel size --------------------------------------------------
+	int blocks = 1;
+	int th_per_block = TH_PER_BLOCK;
+	int threads = blocks*th_per_block;
+	
+	
+	// Initialize clock --------------------------------------------------------
+	clock_t test_start = clock();
+	clock_t kernel_start;
+	
+	
+	// Copy Integral Image to device -------------------------------------------
+	float* intImg_d;
+	cudaMalloc(&intImg_d, rows*cols*sizeof(float));
+	cudaMemcpy(intImg_d, intImg, rows*cols*sizeof(float), cudaMemcpyHostToDevice);
+	checkCUDAError("integral image");
+	
+	
+	// Copy Heat Map to device -------------------------------------------
+	float* heatMap_d;
+	// cudaMalloc(&heatMap_d, rows*cols*sizeof(float));
+	// cudaMemcpy(heatMap_d, heatMap, rows*cols*sizeof(float), cudaMemcpyHostToDevice);
+	// checkCUDAError("heat map image");
+
+	
+	// Copy window offsets to device -------------------------------------------
+	int* winOffsets_d;
+	int nValidSubWindows = numWindows;
+	
+	cudaMalloc(&winOffsets_d, nValidSubWindows*sizeof(int));
+	cudaMemcpy(winOffsets_d, winOffsets, nValidSubWindows*sizeof(int), cudaMemcpyHostToDevice);
+	checkCUDAError("window offsets");
+	
+	
+	// Initialize device 'boolean' face detected array -------------------------
+	int* faceDetected_d[4];
+	cudaMalloc(&faceDetected_d[0], nValidSubWindows*sizeof(int));
+	cudaMalloc(&faceDetected_d[1], nValidSubWindows*sizeof(int));
+	cudaMalloc(&faceDetected_d[2], nValidSubWindows*sizeof(int));
+	cudaMalloc(&faceDetected_d[3], nValidSubWindows*sizeof(int));
+	
+	
+	cudaMemset(faceDetected_d[0], 0, nValidSubWindows*sizeof(int));
+	cudaMemset(faceDetected_d[1], 0, nValidSubWindows*sizeof(int));
+	cudaMemset(faceDetected_d[2], 0, nValidSubWindows*sizeof(int));
+	cudaMemset(faceDetected_d[3], 0, nValidSubWindows*sizeof(int));
+	
+	checkCUDAError("bool array");
+	
+	
+	// Initialize results array for debugging... -------------------------------
+	float* results_d;
+	// cudaMalloc(&results_d, nValidSubWindows*sizeof(float));
+	// cudaMemset(results_d, 0, nValidSubWindows*sizeof(float));
+	// checkCUDAError("debug results");
+	
+	
+	
+	//==========================================================================
+	// Run kernels -----------------------------------------------------------------
+	kernel_heading("All Kernels", blocks, th_per_block, threads, nValidSubWindows);
+	kernel_start = clock();
+	for(int i = 2; i < 2+N_SCALES; ++i){
+		ID1kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
+														stride, 						//	Stride
+														winOffsets_d, 				//	Sub-Window Offsets
+														winSize, 					//	Sub-Window Size
+														nValidSubWindows, 		//	Number of Sub Windows
+														winSize/(5*(i)), 			// Scale of the feature
+														faceDetected_d[0], 			//	Array to hold if a face was detected
+														results_d,					//	Array to hold maximum feature value for each sub window
+														heatMap_d					// Heat map
+														);
+														
+		ID2kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
+														stride, 						//	Stride
+														winOffsets_d, 				//	Sub-Window Offsets
+														winSize, 					//	Sub-Window Size
+														nValidSubWindows, 		//	Number of Sub Windows
+														winSize/(5*(i)), 			// Scale of the feature
+														faceDetected_d[1], 			//	Array to hold if a face was detected
+														results_d,					//	Array to hold maximum feature value for each sub window
+														heatMap_d					// Heat map
+														);
+														
+		ID3kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
+														stride, 						//	Stride
+														winOffsets_d, 				//	Sub-Window Offsets
+														winSize, 					//	Sub-Window Size
+														nValidSubWindows, 		//	Number of Sub Windows
+														winSize/(5*(i)), 			// Scale of the feature
+														faceDetected_d[2], 			//	Array to hold if a face was detected
+														results_d,					//	Array to hold maximum feature value for each sub window
+														heatMap_d					// Heat map
+														);
+
+		ID4kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
+														stride, 						//	Stride
+														winOffsets_d, 				//	Sub-Window Offsets
+														winSize, 					//	Sub-Window Size
+														nValidSubWindows, 		//	Number of Sub Windows
+														winSize/(5*(i)), 			// Scale of the feature
+														faceDetected_d[3], 			//	Array to hold if a face was detected
+														results_d,					//	Array to hold maximum feature value for each sub window
+														heatMap_d					// Heat map
+														);
+	}
+	cudaThreadSynchronize();
+	printf("Completed in %f seconds\n", ((double)clock() - kernel_start) / CLOCKS_PER_SEC);
+	checkCUDAError("kernels");
+	
+	
+	
+	
+	// Results -----------------------------------------------------------------
+	printf("\n\nResults\n\n");
+	printf("Completed test in %f seconds\n", ((double)clock() - test_start) / CLOCKS_PER_SEC);
+	if(nValidSubWindows > 0){
+		printf("A face was detected\n");
+	}
+	
+	
+	// Cleanup -----------------------------------------------------------------
+	cudaFree(intImg_d);
+	// cudaFree(heatMap_d);
+	cudaFree(winOffsets_d);
+	cudaFree(faceDetected_d[0]);
+	cudaFree(faceDetected_d[1]);
+	cudaFree(faceDetected_d[2]);
+	cudaFree(faceDetected_d[3]);
+	
+	
+	// cudaFree(results_d);
+	checkCUDAError("cudaFree");
+}
 
 void debugResults(int* facesDetected_d, float* results_d, int nValidSubWindows){
 	int* 		facesDetected 	= (int*) 	malloc(nValidSubWindows*sizeof(int));
@@ -281,6 +396,16 @@ int compact(int* winOffsets_d, int* faceDetected_d, int nValidSubWindows){
 	return len;
 }
 
+
+
+void kernel_heading(char* heading, int blocks, int th_per_block, int threads, int nValidSubWindows){
+	// printf("\n\n");
+	// printf("Running %s --------\n", heading);
+	// printf("Blocks:   %d\n", blocks);
+	// printf("Th/Block: %d\n", th_per_block);
+	// printf("Threads:  %d\n", threads);
+	// printf("Windows:  %d\n", nValidSubWindows);
+}
 
 
 

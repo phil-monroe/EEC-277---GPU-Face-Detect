@@ -114,6 +114,10 @@ Mat detect_faces(Mat &integral_img){
 
 	
 	cuda_detect_faces(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize(), heat_data);
+	
+	cout << endl << endl<< "BRUTE FORCE" << endl;
+	cuda_detect_faces2(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize(), heat_data);
+	
 	return heat_map;
 }
 

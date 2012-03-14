@@ -4,7 +4,7 @@
 #define ID4_BASE_WIDTH		6
 #define ID4_BASE_HEIGHT		6
 #define ID4_MID_WIDTH		2
-#define ID4_THRESHOLD		400		//definitely needs to be changed
+#define ID4_THRESHOLD		500		//definitely needs to be changed
 #define ID4_SKIP_AMOUNT		4			//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 //This identifier is 3 vertical bars going light dark light
