@@ -25,15 +25,11 @@ integral.o: src/integral.cu src/integral.h cuda_helpers.o
 	@nvcc -c src/integral.cu $(CFLAGS)
 	
 	
-identify1.o: src/identify1.cu cuda_helpers.o
-	@echo "Compiling identify1.cu"
-	@nvcc -c src/identify1.cu $(CFLAGS)
-	
 cuda_helpers.o: src/cuda_helpers.cu src/cuda_helpers.h
 	@echo "Compiling cuda_helpers.cu"
 	@nvcc -c src/cuda_helpers.cu $(CFLAGS)
 	
-cuda_detect_faces.o: src/cuda_detect_faces.h src/cuda_detect_faces.cu identify1.o
+cuda_detect_faces.o: src/cuda_detect_faces.h src/cuda_detect_faces.cu src/identify1.cu src/identify2.cu
 	@echo "Compiling cuda_detect_faces.cu"
 	@nvcc -c src/cuda_detect_faces.cu $(CFLAGS)
 

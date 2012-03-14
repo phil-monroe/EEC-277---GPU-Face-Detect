@@ -10,6 +10,8 @@
 #include "cuda_detect_faces.h"
 #include "cuda_helpers.h"
 #include "identify1.cu"
+#include "identify2.cu"
+
 
 #define TH_PER_BLOCK 64
 #define N_KERNELS		1
@@ -81,7 +83,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 														stride, 						//	Stride
 														winOffsets_d, 				//	Sub-Window Offsets
 														winSize, 					//	Sub-Window Size
-														numWindows, 				//	Number of Sub Windows
+														nValidSubWindows, 		//	Number of Sub Windows
 														winSize/(5*(i)), 			// Scale of the feature
 														faceDetected_d, 			//	Array to hold if a face was detected
 														results_d,					//	Array to hold maximum feature value for each sub window
@@ -110,13 +112,15 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	printf("Blocks:   %d\n", blocks);
 	printf("Th/Block: %d\n", th_per_block);
 	printf("Threads:  %d\n", threads);
+	printf("Windows:  %d\n", nValidSubWindows);
+	
 	start = clock();
 	for(int i = 2; i < 2+N_SCALES; ++i){
-		ID1kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
+		ID2kernel<<<blocks, th_per_block>>>(intImg_d, 					// Itegral Image
 														stride, 						//	Stride
 														winOffsets_d, 				//	Sub-Window Offsets
 														winSize, 					//	Sub-Window Size
-														numWindows, 				//	Number of Sub Windows
+														nValidSubWindows, 		//	Number of Sub Windows
 														winSize/(5*(i)), 			// Scale of the feature
 														faceDetected_d, 			//	Array to hold if a face was detected
 														results_d,					//	Array to hold maximum feature value for each sub window
@@ -125,7 +129,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	}
 	cudaThreadSynchronize();
 	printf("Completed in %f seconds\n", ((double)clock() - start) / CLOCKS_PER_SEC);
-	checkCUDAError("kernel ID1");
+	checkCUDAError("kernel ID2");
 
 	
 	// Compact
@@ -151,7 +155,11 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 
 
 	// Cleanup
+	cudaMemcpy(heatMap, heatMap_d, rows*cols*sizeof(float), cudaMemcpyDeviceToHost);
+	
+	
 	cudaFree(intImg_d);
+	cudaFree(heatMap_d);
 	cudaFree(winOffsets_d);
 	cudaFree(faceDetected_d);
 	cudaFree(results_d);

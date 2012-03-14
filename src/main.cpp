@@ -17,6 +17,8 @@ Mat getImg(int argc, char** argv);
 Mat integral_image(Mat &img);
 void display_image(Mat &img, string title, int x=0, int y=0);
 Mat detect_faces(Mat &integral_img);
+Mat composite_heat_image(Mat &image, Mat &heat_map);
+
 
 
 int main( int argc, char** argv )
@@ -29,10 +31,13 @@ int main( int argc, char** argv )
 	normalize(integral_img, integral_img, 0, 1, NORM_MINMAX);
 	normalize(heat_map, heat_map, 0, 1, NORM_MINMAX);
 	
+	Mat heat_img = composite_heat_image(image, heat_map);
+	
 	
 	display_image(image, "Original");
 	display_image(integral_img, "Integral Image", image.rows);
 	display_image(heat_map, "Heat Map", 0, image.cols);
+	display_image(heat_img, "Heat Image", image.rows, image.cols);
 	
 
 	waitKey(0);											 // Wait for a keystroke in the window
@@ -112,6 +117,15 @@ Mat detect_faces(Mat &integral_img){
 	return heat_map;
 }
 
+Mat composite_heat_image(Mat &image, Mat &heat_map){
+	Mat ret = image.clone(); 
+	for(size_t i = 0; i < image.rows; ++i){
+		for(size_t j = 0; j < image.cols; ++j){
+			ret.row(i).col(j) = image.row(i).col(j) * heat_map.row(i+1).col(j+1);
+		}
+	}
+	return ret;
+}
 
 
 

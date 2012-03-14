@@ -1,10 +1,10 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
-#define BASE_WIDTH	8
-#define BASE_HEIGHT	4
-#define THRESHOLD		150 //definitely needs to be changed
-#define SKIP_AMOUNT	4 //amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
+#define BASE_WIDTH			8
+#define BASE_HEIGHT			4
+#define ID1_THRESHOLD		100.0f 	//definitely needs to be changed
+#define SKIP_AMOUNT			4 			//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 //This identifier is 2 horizontal bars with light (positive) on top and dark (negative) on bottom
 __global__ 
@@ -25,7 +25,7 @@ void ID1kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 				float lowerRight 		= intImage[(i+BASE_WIDTH*scale)*stride + j+(BASE_HEIGHT*scale)];
 						
 				//calulate fit value based on identifier (hard-coded)
-				float fitValue = midRight*2-midLeft*2 + upperLeft - lowerRight - upperRight + lowerLeft;
+				float fitValue = midRight*2 - midLeft*2 + upperLeft - lowerRight - upperRight + lowerLeft;
 				
 				if(fitValue > maxFitValue){
 					maxFitValue = fitValue;
@@ -33,11 +33,9 @@ void ID1kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 			}
 		}
 		float goodnessValue = maxFitValue;//(BASE_WIDTH*scale*BASE_HEIGHT*scale); // goodnessValue = fit/area
-		
-		
 		results[threadNum] = goodnessValue;
 		
-		if(goodnessValue > THRESHOLD){
+		if(goodnessValue > ID1_THRESHOLD){
 			faceDetected[threadNum] = 1;
 
 			for(int i = 0; i < windowSize; ++i){
