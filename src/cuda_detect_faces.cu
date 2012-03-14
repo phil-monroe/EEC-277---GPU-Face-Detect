@@ -26,6 +26,17 @@ void kernel_heading(char* heading, int blocks, int th_per_block, int threads, in
 void kernel_footer(char* msg, clock_t kernel_start);
 
 
+//====================================================================================================================
+//                                                                                                                    
+//  #####  #     # ######     #       ######                                      #######                             
+// #     # #     # #     #   # #      #     # ###### ##### ######  ####  #####    #         ##    ####  ######  ####  
+// #       #     # #     #  #   #     #     # #        #   #      #    #   #      #        #  #  #    # #      #      
+// #       #     # #     # #     #    #     # #####    #   #####  #        #      #####   #    # #      #####   ####  
+// #       #     # #     # #######    #     # #        #   #      #        #      #       ###### #      #           # 
+// #     # #     # #     # #     #    #     # #        #   #      #    #   #      #       #    # #    # #      #    # 
+//  #####   #####  ######  #     #    ######  ######   #   ######  ####    #      #       #    #  ####  ######  ####  
+//                                                                                                                    
+//====================================================================================================================
 
 void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* winOffsets, int numWindows, int winSize, float* heatMap){
 	
@@ -214,6 +225,22 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	checkCUDAError("cudaFree");
 }
 
+
+
+
+
+//===============================================================================================================================
+//
+//  #####  #     # ######     #       ######                                      #######                                 #####  
+// #     # #     # #     #   # #      #     # ###### ##### ######  ####  #####    #         ##    ####  ######  ####     #     # 
+// #       #     # #     #  #   #     #     # #        #   #      #    #   #      #        #  #  #    # #      #               # 
+// #       #     # #     # #     #    #     # #####    #   #####  #        #      #####   #    # #      #####   ####      #####  
+// #       #     # #     # #######    #     # #        #   #      #        #      #       ###### #      #           #    #       
+// #     # #     # #     # #     #    #     # #        #   #      #    #   #      #       #    # #    # #      #    #    #       
+//  #####   #####  ######  #     #    ######  ######   #   ######  ####    #      #       #    #  ####  ######  ####     #######
+//
+//===============================================================================================================================
+
 void cuda_detect_faces2(float* intImg, int rows, int cols, size_t stride, int* winOffsets, int numWindows, int winSize, float* heatMap){
 	
 	// Initialize kernel size --------------------------------------------------
@@ -256,7 +283,6 @@ void cuda_detect_faces2(float* intImg, int rows, int cols, size_t stride, int* w
 	cudaMalloc(&faceDetected_d[1], nValidSubWindows*sizeof(int));
 	cudaMalloc(&faceDetected_d[2], nValidSubWindows*sizeof(int));
 	cudaMalloc(&faceDetected_d[3], nValidSubWindows*sizeof(int));
-	
 	
 	cudaMemset(faceDetected_d[0], 0, nValidSubWindows*sizeof(int));
 	cudaMemset(faceDetected_d[1], 0, nValidSubWindows*sizeof(int));
