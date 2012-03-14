@@ -1,7 +1,7 @@
 CFLAGS	= $(shell pkg-config --cflags opencv)
 CFLAGS  += -m32 -I./include
 LIBS		= $(shell pkg-config --libs opencv)
-LIBS	  += -L/usr/local/cuda/lib -lcudart -L./lib -lcudpp
+LIBS	  += -L/usr/local/cuda/lib -lcudart
 
 all: detect
 	
