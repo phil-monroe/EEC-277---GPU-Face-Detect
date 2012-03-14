@@ -112,7 +112,7 @@ Mat detect_faces(Mat &integral_img){
 	float* img_data = (float*) integral_img.data;
 	float* heat_data = (float*) heat_map.data;
 
-	
+	cout << endl << endl<< "CASCADING" << endl;
 	cuda_detect_faces(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize(), heat_data);
 	
 	cout << endl << endl<< "BRUTE FORCE" << endl;

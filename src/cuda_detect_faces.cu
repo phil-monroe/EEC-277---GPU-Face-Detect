@@ -23,6 +23,7 @@
 void debugResults(int* facesDetected_d, float* results_d, int nValidSubWindows);
 int compact(int* winOffsets_d, int* faceDetected_d,  int nValidSubWindows);
 void kernel_heading(char* heading, int blocks, int th_per_block, int threads, int nValidSubWindows);
+void kernel_footer(char* msg, clock_t kernel_start);
 
 
 
@@ -93,9 +94,8 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 														heatMap_d					// Heat map
 														);
 	}
-	cudaThreadSynchronize();
-	printf("Completed in %f seconds\n", ((double)clock() - kernel_start) / CLOCKS_PER_SEC);
-	checkCUDAError("kernel ID1");
+	kernel_footer("ID1", kernel_start);
+
 
 	
 	// Compact -----------------------------------------------------------------
@@ -124,9 +124,8 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 														heatMap_d					// Heat map
 														);
 	}
-	cudaThreadSynchronize();
-	printf("Completed in %f seconds\n", ((double)clock() - kernel_start) / CLOCKS_PER_SEC);
-	checkCUDAError("kernel ID2");
+	kernel_footer("ID2", kernel_start);
+
 
 	
 	// Compact -----------------------------------------------------------------
@@ -154,9 +153,8 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 														heatMap_d					// Heat map
 														);
 	}
-	cudaThreadSynchronize();
-	printf("Completed in %f seconds\n", ((double)clock() - kernel_start) / CLOCKS_PER_SEC);
-	checkCUDAError("kernel ID3");
+	kernel_footer("ID3", kernel_start);
+
 	
 	
 	// Compact -----------------------------------------------------------------
@@ -184,9 +182,8 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 														heatMap_d					// Heat map
 														);
 	}
-	cudaThreadSynchronize();
-	printf("Completed in %f seconds\n", ((double)clock() - kernel_start) / CLOCKS_PER_SEC);
-	checkCUDAError("kernel ID4");	
+	kernel_footer("ID4", kernel_start);
+
 	
 	// Compact -----------------------------------------------------------------
 	nValidSubWindows = compact(winOffsets_d, faceDetected_d,  nValidSubWindows);
@@ -197,7 +194,7 @@ void cuda_detect_faces(float* intImg, int rows, int cols, size_t stride, int* wi
 	
 	
 	// Results -----------------------------------------------------------------
-	printf("\n\nResults\n\n");
+	printf("Results\n\n");
 	printf("Completed test in %f seconds\n", ((double)clock() - test_start) / CLOCKS_PER_SEC);
 	if(nValidSubWindows > 0){
 		printf("A face was detected\n");
@@ -326,9 +323,8 @@ void cuda_detect_faces2(float* intImg, int rows, int cols, size_t stride, int* w
 														heatMap_d					// Heat map
 														);
 	}
-	cudaThreadSynchronize();
-	printf("Completed in %f seconds\n", ((double)clock() - kernel_start) / CLOCKS_PER_SEC);
-	checkCUDAError("kernels");
+	kernel_footer("All kernels", kernel_start);
+
 	
 	
 	
@@ -390,7 +386,7 @@ int compact(int* winOffsets_d, int* faceDetected_d, int nValidSubWindows){
 	// Compute the length of compacted array
 	int len = new_end - offsets_ptr;
 	
-	printf("Possible faces: %d\n", len);
+	printf("Possible faces: %d\n\n", len);
 	
 	// Return the length of the compacted array
 	return len;
@@ -400,11 +396,17 @@ int compact(int* winOffsets_d, int* faceDetected_d, int nValidSubWindows){
 
 void kernel_heading(char* heading, int blocks, int th_per_block, int threads, int nValidSubWindows){
 	// printf("\n\n");
-	// printf("Running %s --------\n", heading);
+	printf("Running %s --------\n", heading);
 	// printf("Blocks:   %d\n", blocks);
 	// printf("Th/Block: %d\n", th_per_block);
 	// printf("Threads:  %d\n", threads);
 	// printf("Windows:  %d\n", nValidSubWindows);
+}
+
+void kernel_footer(char* msg, clock_t kernel_start){
+	cudaThreadSynchronize();
+	printf("%s completed in %f seconds\n", msg, ((double)clock() - kernel_start) / CLOCKS_PER_SEC);
+	checkCUDAError(msg);
 }
 
 
