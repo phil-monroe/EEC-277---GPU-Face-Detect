@@ -9,10 +9,10 @@
 
 #include "cuda_detect_faces.h"
 #include "cuda_helpers.h"
-#include "identify1.cu"
-#include "identify2.cu"
-#include "identify3.cu"
-#include "identify4.cu"
+#include "kernels/identify1.cu"
+#include "kernels/identify2.cu"
+#include "kernels/identify3.cu"
+#include "kernels/identify4.cu"
 
 
 #define TH_PER_BLOCK 64
