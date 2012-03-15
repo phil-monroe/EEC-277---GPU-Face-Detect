@@ -33,7 +33,7 @@ void ID1kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 			}
 		}
 		float goodnessValue = maxFitValue/(ID1_BASE_WIDTH*scale*ID1_BASE_HEIGHT*scale); // goodnessValue = fit/area
-		results[threadNum] = goodnessValue;
+		// results[threadNum] = goodnessValue;
 		
 		if(goodnessValue > ID1_THRESHOLD){
 			faceDetected[threadNum] = 1;

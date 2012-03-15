@@ -42,7 +42,7 @@ void ID4kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 		}
 		float goodnessValue = maxFitValue/(ID4_BASE_WIDTH*scale*ID4_BASE_HEIGHT*scale); // goodnessValue = fit/area
 	
-		results[threadNum] = goodnessValue;
+		// results[threadNum] = goodnessValue;
 		
 		if(goodnessValue > ID4_THRESHOLD){
 			faceDetected[threadNum] = 1;

@@ -27,21 +27,21 @@ int main( int argc, char** argv )
 	Mat integral_img = integral_image(image);
 	
 	Mat heat_map = detect_faces(integral_img);
-	// 
-	// normalize(integral_img, integral_img, 0, 1, NORM_MINMAX);
-	// normalize(heat_map, heat_map, 0, 1, NORM_MINMAX);
-	// 
-	// Mat heat_img = composite_heat_image(image, heat_map);
-	// 
-	// if(argc > 2 && (strcmp(argv[2], "-v") == 0)){
-	// 	display_image(image, "Original");
-	// 	display_image(integral_img, "Integral Image", image.cols);
-	// 	display_image(heat_map, "Heat Map", 0, image.rows+40);
-	// 	display_image(heat_img, "Heat Image", image.cols, image.rows+40);
-	// 
-	// 
-	// 	waitKey(0);											 // Wait for a keystroke in the window		
-	// }
+	
+	normalize(integral_img, integral_img, 0, 1, NORM_MINMAX);
+	normalize(heat_map, heat_map, 0, 1, NORM_MINMAX);
+	
+	Mat heat_img = composite_heat_image(image, heat_map);
+	
+	if(argc > 2 && (strcmp(argv[2], "-v") == 0)){
+		display_image(image, "Original");
+		display_image(integral_img, "Integral Image", image.cols);
+		display_image(heat_map, "Heat Map", 0, image.rows+40);
+		display_image(heat_img, "Heat Image", image.cols, image.rows+40);
+	
+	
+		waitKey(0);											 // Wait for a keystroke in the window		
+	}
 
 	
 	
@@ -107,8 +107,8 @@ Mat detect_faces(Mat &integral_img){
 	cout << endl << endl<< "CASCADING" << endl;
 	cuda_detect_faces((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
 
-	// cout << endl << endl<< "BRUTE FORCE" << endl;
-	// cuda_detect_faces2((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
+	cout << endl << endl<< "BRUTE FORCE" << endl;
+	cuda_detect_faces2((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
 	
 	return heat_map;
 }

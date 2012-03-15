@@ -33,16 +33,16 @@ void ID2kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 			}
 		}
 		float goodnessValue = maxFitValue/(ID2_BASE_WIDTH*scale*ID2_BASE_HEIGHT*scale); // goodnessValue = fit/area
-		results[threadNum] = goodnessValue;
+		// results[threadNum] = goodnessValue;
 
 		if(goodnessValue > ID2_THRESHOLD){
 			faceDetected[threadNum] = 1;
 
-			for(int i = 0; i < windowSize; ++i){
-				for(int j = 0; j < windowSize; ++j){
-					heatMap[offsets[threadNum] + i*stride + j] = heatMap[offsets[threadNum] + i*stride + j] + 1.0f;
-				}
-			}
+			// for(int i = 0; i < windowSize; ++i){
+			// 	for(int j = 0; j < windowSize; ++j){
+			// 		heatMap[offsets[threadNum] + i*stride + j] = heatMap[offsets[threadNum] + i*stride + j] + 1.0f;
+			// 	}
+			// }
 		}
 	}
 }
