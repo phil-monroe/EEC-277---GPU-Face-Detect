@@ -2,7 +2,8 @@
 #include "window_info.h"
 
 
-WindowInfo::WindowInfo(cv::Mat mat, int wSize):img(mat){
+WindowInfo::WindowInfo(cv::Mat mat, int wSize){
+	img = mat;
 	std::cout << "Image Size " << ": (" << img.rows << " , " << img.cols << ")" << std::endl;
 	
 	winSize = wSize;
@@ -65,8 +66,9 @@ void WindowInfo::computePositions(){
 	int win = 0;
 	for(int i = 0; i <= img.rows - windowSize(); i+= windowOffset()){
 		for(int j = 0; j <= img.cols - windowSize(); j += windowOffset()){
-			
-			offsets[win] = i*img.cols + j; 
+			if(win < totalWindows()){
+				offsets[win] = i*img.cols + j;
+			}
 			win++;
 		}
 	}

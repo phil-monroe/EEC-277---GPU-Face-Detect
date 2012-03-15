@@ -27,27 +27,31 @@ int main( int argc, char** argv )
 	Mat integral_img = integral_image(image);
 	
 	Mat heat_map = detect_faces(integral_img);
-	
-	normalize(integral_img, integral_img, 0, 1, NORM_MINMAX);
-	normalize(heat_map, heat_map, 0, 1, NORM_MINMAX);
-	
-	Mat heat_img = composite_heat_image(image, heat_map);
-	
-	
-	display_image(image, "Original");
-	display_image(integral_img, "Integral Image", image.cols);
-	display_image(heat_map, "Heat Map", 0, image.rows+40);
-	display_image(heat_img, "Heat Image", image.cols, image.rows+40);
-	
+	// 
+	// normalize(integral_img, integral_img, 0, 1, NORM_MINMAX);
+	// normalize(heat_map, heat_map, 0, 1, NORM_MINMAX);
+	// 
+	// Mat heat_img = composite_heat_image(image, heat_map);
+	// 
+	// if(argc > 2 && (strcmp(argv[2], "-v") == 0)){
+	// 	display_image(image, "Original");
+	// 	display_image(integral_img, "Integral Image", image.cols);
+	// 	display_image(heat_map, "Heat Map", 0, image.rows+40);
+	// 	display_image(heat_img, "Heat Image", image.cols, image.rows+40);
+	// 
+	// 
+	// 	waitKey(0);											 // Wait for a keystroke in the window		
+	// }
 
-	waitKey(0);											 // Wait for a keystroke in the window
+	
+	
 	return 0;
 }
 
 
 Mat getImg(int argc, char** argv){
 	// Check for filename
-	if( argc != 2) {
+	if( argc < 2) {
 	 cout <<" Usage: detect <image>" << endl;
 	 exit(-1);
 	}
@@ -82,15 +86,6 @@ Mat integral_image(Mat &img){
 	
 	cout << "CUDA Intergral time: " << ex_time << endl;
 	
-	// normalize(int_img, int_img, 0, 1, NORM_MINMAX);
-	// normalize(cv_int_img, cv_int_img, 0, 1, NORM_MINMAX);
-	// 
-	// // Display Integral
-	// 
-	// 
-	// display_image(int_img, "Computed Integral", img.cols);
-	// display_image(cv_int_img, "OpenCV Integral", img.cols*2);
-	
 	return int_img;
 }
 
@@ -103,20 +98,17 @@ void display_image(Mat &img, string title, int x, int y){
 
 
 Mat detect_faces(Mat &integral_img){
-	int small = min(integral_img.rows, integral_img.cols);
-	WindowInfo winInfo(integral_img, small/3);
-	cout 	<< "Window Size:     	" << winInfo.windowSize()		<< endl;
+	int winSize = min(integral_img.rows, integral_img.cols)/4;
+	cout 	<< "Window Size:     	" << winSize		<< endl;
+	
+	WindowInfo winInfo(integral_img, winSize);
 	Mat heat_map(integral_img.rows, integral_img.cols, CV_32F, 0.0f);
-			
-	int* subWindows = winInfo.subWindowOffsets();
-	float* img_data = (float*) integral_img.data;
-	float* heat_data = (float*) heat_map.data;
 
 	cout << endl << endl<< "CASCADING" << endl;
-	cuda_detect_faces(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize(), heat_data);
-	
-	cout << endl << endl<< "BRUTE FORCE" << endl;
-	cuda_detect_faces2(img_data,integral_img.rows, integral_img.cols, integral_img.cols, subWindows, winInfo.totalWindows(), winInfo.windowSize(), heat_data);
+	cuda_detect_faces((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
+
+	// cout << endl << endl<< "BRUTE FORCE" << endl;
+	// cuda_detect_faces2((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
 	
 	return heat_map;
 }

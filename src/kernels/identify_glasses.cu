@@ -4,8 +4,8 @@
 #define GLASSES_FRAME_HEIGHT	2
 #define GLASSES_BASE_WIDTH		4
 #define GLASSES_BASE_HEIGHT	4
-#define GLASSES_THRESHOLD		600 	//definitely needs to be changed
-#define GLASSES_SKIP_AMOUNT	4 		//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
+#define GLASSES_THRESHOLD		.22f 	//definitely needs to be changed
+#define GLASSES_SKIP_AMOUNT	2 		//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 //This identifier is the glasses identifier with 3 horizontal bars going:
 //light 

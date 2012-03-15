@@ -1,11 +1,11 @@
 #include <cuda.h>
 #include <cuda_runtime_api.h>
 
-#define ID3_BASE_WIDTH		6	
+#define ID3_BASE_WIDTH		3	
 #define ID3_BASE_HEIGHT		6
-#define ID3_MID_WIDTH		2
-#define ID3_THRESHOLD		.15f	//definitely needs to be changed
-#define ID3_SKIP_AMOUNT		4 		//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
+#define ID3_MID_WIDTH		1
+#define ID3_THRESHOLD		.19f	//definitely needs to be changed
+#define ID3_SKIP_AMOUNT		1 		//amount to skip in pixels, we can change this to be multiplied by scale if necessary/desirable
 
 
 //This identifier is 3 vertical bars going dark light dark
