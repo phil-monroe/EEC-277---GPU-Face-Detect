@@ -58,8 +58,18 @@ text and figure of our glasses classifier
 
 \section{Results}
 Stuff goes here
+Actual results: face images: 0/50 glasses  49/50 faces
+	non-face images: 8/50 glasses  38/50 faces
+	glasses images: 20/25 glasses  24/25 faces
+
+	Exec time: cascade: 0.020334
+		brute force: 0.033715
+		glasses: 0.004104
 
 \section{Discussion}
+64 Threads per block, 3 kernel calls
+
+Max occupancy is at 128 threads per block
 
 \section{Conclusion}
 Conclusion goes here
