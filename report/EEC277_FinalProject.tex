@@ -27,15 +27,18 @@ In this paper, we implemented the beginnings of the Viola-Jones object detection
 In this paper, we will address the application of face detection on the GPU. We used the Viola-Jones Object Detection algorithm to detect faces. We also added a glasses identifier to make an attempt at detecting whether the faces detected had glasses or not. We tested our algorithm on a subset of the Caltech Web Faces database and a subset of the Caltech 101 image database to analyze how accurate our implementation was. Finally, we discuss the pros and cons of the implementation as well as some notable aspects of our specific implementation.
 
 \section{Viola-Jones Object Detection}
-Viola-Jones object detection focuses on using simple identifiers to determine whether the object exists in the image or not. The algorithm also performs face localization if sufficiently many identifiers are used.
-
+Viola-Jones object detection focuses on using simple identifiers to determine whether the object exists in the image or not. The algorithm also performs object localization if sufficiently many identifiers are used. We used this algorithm to determine the presence (or lack thereof) of a face in an input image. The algorithm splits the image into numerous \emph{sub-windows} or small regions of the image upon which detection is applied.
 
 \subsection{Integral Image}
-To speed up computation of the identifiers, the Viola-Jones algorithm pre-computes the integral image. The integral image defines each pixel as the sum of all pixels that are both above and to the left of it normalized to a maximum value in the image of one. We explored both the standard serial implementation of computing the integral image from OpenCV as well as a parallel implementation. (EXPLAIN PARALLEL IMPLEMENTATION HERE A LITTLE)
+To speed up computation of the identifiers, the Viola-Jones algorithm pre-computes the integral image. The integral image defines each pixel as the sum of all pixels that are both above and to the left of it. We explored both the standard serial implementation of computing the integral image from OpenCV as well as a parallel implementation.
+
+The parallel implementation first performs a scan operation on the columns to create a sum for each pixel location of all the pixels above it. Then, the algorithm does a scan operation on the rows to add up all of the column sums for each pixel to the left of it. This calculates the sum of all of the pixels above and to the left of the current pixel.
 
 
-\subsection{Cascade of Identifiers}
-text and figure of our identifiers
+\subsection{Cascade of Classifiers}
+The classifiers are simple rectangular identifiers to determine different features of the face. To compute whether the classifier accepts that the given sub-window has a face, the algorithm subtracts the "black" area from the "white" area of the classifier. Figure 1 shows the classifiers we used for face detection. In the Viola-Jones paper, they use two hundred of these kinds of classifiers but we use a small subset of four classifiers because we are interested in how this algorithm applies to the GPU instead of the actual results. Four was sufficient to see the difficulties with implementing this algorithm on the GPU.
+
+The other portion of Viola-Jones face detection was the use of a classifier \emph{cascade}. This means that the output of one classifier (which contains the list of sub-windows that may have a face) is the input for the next classifier. So if any classifier rejects a sub-window, the algorithm rejects the sub-window. If all of the classifiers accept a sub-window, then the algorithm says that there is a face at that subwindow. The alternative to the cascade approach is to apply all of the classifiers to every sub-window and define some number of acceptances that each sub-window needs to determine that there is a face there. We implemented both of these approaches to analyze which would be more efficient on the GPU.
 \begin{figure}[h!]
 	\centering
 		\includegraphics[width=80mm]{classifiers.pdf}
@@ -44,13 +47,13 @@ text and figure of our identifiers
 
 
 
-\subsection{Glasses Identifier}
-text and figure of our glasses identifier
+\subsection{Glasses Classifier}
+text and figure of our glasses classifier
 
 \begin{figure}[h!]
 	\centering
 		\includegraphics[width=40mm]{glasses_identifier.pdf}
-		\caption{The glasses identifier that we implemented}
+		\caption{The glasses classifier that we implemented}
 \end{figure}
 
 \section{Results}
