@@ -26,6 +26,8 @@ In this paper, we implemented the beginnings of the Viola-Jones object detection
 \section{Introduction}
 In this paper, we will address the application of face detection on the GPU. We used the Viola-Jones Object Detection algorithm to detect faces. We also added a glasses identifier to make an attempt at detecting whether the faces detected had glasses or not. We tested our algorithm on a subset of the Caltech Web Faces database and a subset of the Caltech 101 image database to analyze how accurate our implementation was. Finally, we discuss the pros and cons of the implementation as well as some notable aspects of our specific implementation.
 
+
+%Do we need to mention how we make sub-windows? (how many / image)
 \section{Viola-Jones Object Detection}
 Viola-Jones object detection focuses on using simple identifiers to determine whether the object exists in the image or not. The algorithm also performs object localization if sufficiently many identifiers are used. We used this algorithm to determine the presence (or lack thereof) of a face in an input image. The algorithm splits the image into numerous \emph{sub-windows} or small regions of the image upon which detection is applied.
 
