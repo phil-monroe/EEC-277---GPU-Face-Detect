@@ -47,11 +47,11 @@ void ID4kernel(float* intImage, size_t stride, int* offsets, int windowSize, int
 		if(goodnessValue > ID4_THRESHOLD){
 			faceDetected[threadNum] = 1;
 
-			// for(int i = 0; i < windowSize; ++i){
-			// 	for(int j = 0; j < windowSize; ++j){
-			// 		heatMap[offsets[threadNum] + i*stride + j] = heatMap[offsets[threadNum] + i*stride + j] + 1.0f;
-			// 	}
-			// }
+			for(int i = 0; i < windowSize; ++i){
+				for(int j = 0; j < windowSize; ++j){
+					heatMap[offsets[threadNum] + i*stride + j] = heatMap[offsets[threadNum] + i*stride + j] + 1.0f;
+				}
+			}
 		}
 	}
     
