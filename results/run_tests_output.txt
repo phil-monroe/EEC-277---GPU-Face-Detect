@@ -1,0 +1,154 @@
+Running tests
+Number of faces:      50
+Number of non-faces:  50
+Number of glasses:    25
+Testing face files
+Face Detected in image_0002.jpg
+Face Detected in image_0006.jpg
+Face Detected in image_0012.jpg
+Face Detected in image_0018.jpg
+Face Detected in image_0021.jpg
+Face Detected in image_0090.jpg
+Face Detected in image_0093.jpg
+Face Detected in image_0094.jpg
+Face Detected in image_0095.jpg
+Face Detected in image_0100.jpg
+Face Detected in image_0102.jpg
+Face Detected in image_0111.jpg
+Face Detected in image_0112.jpg
+Face Detected in image_0138.jpg
+Face Detected in image_0139.jpg
+Face Detected in image_0169.jpg
+Face Detected in image_0171.jpg
+Face Detected in image_0176.jpg
+Face Detected in image_0189.jpg
+Face Detected in image_0190.jpg
+Face Detected in image_0199.jpg
+Face Detected in image_0200.jpg
+Face Detected in image_0204.jpg
+Face Detected in image_0206.jpg
+Face Detected in image_0207.jpg
+Face Detected in image_0208.jpg
+Face Detected in image_0212.jpg
+Face Detected in image_0220.jpg
+Face Detected in image_0229.jpg
+Face Detected in image_0233.jpg
+Face Detected in image_0239.jpg
+Face Detected in image_0253.jpg
+Face Detected in image_0260.jpg
+Face Detected in image_0288.jpg
+Face Detected in image_0300.jpg
+Face Detected in image_0301.jpg
+Face Detected in image_0305.jpg
+Face Detected in image_0306.jpg
+Face Detected in image_0307.jpg
+Face Detected in image_0310.jpg
+Face Detected in image_0312.jpg
+Face Detected in image_0313.jpg
+Face Detected in image_0314.jpg
+Face Detected in image_0315.jpg
+Face Detected in image_0321.jpg
+Face Detected in image_0324.jpg
+Face Detected in image_0327.jpg
+Face Detected in image_0330.jpg
+Face Detected in image_0365.jpg
+Found 49 faces in 50 files.
+Found 0 glasses in 25 files.
+
+Testing non-face files
+Face Detected in image_0004.jpg
+Face Detected in image_0008.jpg
+Face Detected in image_0009.jpg
+Face Detected in image_0010.jpg
+Glasses were detected in image_0010.jpg
+Face Detected in image_0011.jpg
+Face Detected in image_0012.jpg
+Face Detected in image_0018.jpg
+Face Detected in image_0020.jpg
+Glasses were detected in image_0020.jpg
+Face Detected in image_0021.jpg
+Face Detected in image_0022.jpg
+Face Detected in image_0023.jpg
+Glasses were detected in image_0023.jpg
+Face Detected in image_0024.jpg
+Face Detected in image_0025.jpg
+Face Detected in image_0028.jpg
+Face Detected in image_0032.jpg
+Face Detected in image_0033.jpg
+Face Detected in image_0034.jpg
+Face Detected in image_0035.jpg
+Face Detected in image_0036.jpg
+Face Detected in image_0037.jpg
+Face Detected in image_0038.jpg
+Face Detected in image_0039.jpg
+Face Detected in image_0042.jpg
+Face Detected in image_0044.jpg
+Face Detected in image_0045.jpg
+Face Detected in image_0047.jpg
+Glasses were detected in image_0047.jpg
+Face Detected in image_0048.jpg
+Face Detected in image_0049.jpg
+Face Detected in image_0051.jpg
+Face Detected in image_0057.jpg
+Face Detected in image_0062.jpg
+Glasses were detected in image_0062.jpg
+Face Detected in image_0063.jpg
+Glasses were detected in image_0063.jpg
+Face Detected in image_0066.jpg
+Face Detected in image_0068.jpg
+Face Detected in image_0069.jpg
+Face Detected in image_0071.jpg
+Face Detected in image_0232.jpg
+Glasses were detected in image_0232.jpg
+Face Detected in image_0246.jpg
+Glasses were detected in image_0246.jpg
+Found 38 faces in 50 files.
+Found 8 glasses in 25 files.
+
+Testing glasses files
+Face Detected in image_0159.jpg
+Face Detected in image_0162.jpg
+Face Detected in image_0163.jpg
+Face Detected in pic00006.jpg
+Face Detected in pic00881.jpg
+Glasses were detected in pic00881.jpg
+Face Detected in pic00922.jpg
+Glasses were detected in pic00922.jpg
+Face Detected in pic01054.jpg
+Glasses were detected in pic01054.jpg
+Face Detected in pic01073.jpg
+Glasses were detected in pic01073.jpg
+Face Detected in pic01223.jpg
+Glasses were detected in pic01223.jpg
+Face Detected in pic01237.jpg
+Glasses were detected in pic01237.jpg
+Face Detected in pic02460.jpg
+Glasses were detected in pic02460.jpg
+Face Detected in pic05032.jpg
+Glasses were detected in pic05032.jpg
+Face Detected in pic05123.jpg
+Glasses were detected in pic05123.jpg
+Face Detected in pic05268.jpg
+Glasses were detected in pic05268.jpg
+Face Detected in pic07330.jpg
+Glasses were detected in pic07330.jpg
+Face Detected in pic07810.jpg
+Glasses were detected in pic07810.jpg
+Face Detected in pic08361.jpg
+Glasses were detected in pic08361.jpg
+Face Detected in pic09100.jpg
+Glasses were detected in pic09100.jpg
+Face Detected in pic09637.jpg
+Glasses were detected in pic09637.jpg
+Face Detected in pic10001.jpg
+Glasses were detected in pic10001.jpg
+Face Detected in pic10395.jpg
+Glasses were detected in pic10395.jpg
+Face Detected in pic10839.jpg
+Glasses were detected in pic10839.jpg
+Face Detected in pic11247.jpg
+Glasses were detected in pic11247.jpg
+Face Detected in pic12171.jpg
+Glasses were detected in pic12171.jpg
+Found 24 faces in 25 files.
+Found 20 glasses in 25 files.

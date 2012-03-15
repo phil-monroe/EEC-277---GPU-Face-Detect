@@ -107,8 +107,8 @@ Mat detect_faces(Mat &integral_img){
 	cout << endl << endl<< "CASCADING" << endl;
 	cuda_detect_faces((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
 
-	// cout << endl << endl<< "BRUTE FORCE" << endl;
-	// cuda_detect_faces2((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
+	cout << endl << endl<< "BRUTE FORCE" << endl;
+	cuda_detect_faces2((float*)integral_img.data,integral_img.rows, integral_img.cols, integral_img.cols, winInfo.subWindowOffsets(), winInfo.totalWindows(), winInfo.windowSize(), (float*) heat_map.data);
 	
 	return heat_map;
 }

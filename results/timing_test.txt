@@ -1,0 +1,180 @@
+final% ./detect test/glasses/pic11247.jpg                                                                                                                                                                                                                                                                         [master]
+OpenCV Intergral time: 0.001277
+CUDA Intergral time: 0.009329
+Window Size:     	139
+Image Size : (772 , 558)
+
+
+CASCADING
+Running ID1 --------
+ID1 completed in 0.000306 seconds
+Compacting completed in 0.000353 seconds
+Possible faces: 21
+
+Running ID2 --------
+ID2 completed in 0.000263 seconds
+Compacting completed in 0.000160 seconds
+Possible faces: 3
+
+Running ID3 --------
+ID3 completed in 0.007691 seconds
+Compacting completed in 0.000238 seconds
+Possible faces: 3
+
+Running ID4 --------
+ID4 completed in 0.006864 seconds
+Compacting completed in 0.001686 seconds
+Possible faces: 3
+
+Face Results
+
+Completed test in 0.020334 seconds
+A face was detected
+
+
+Checking for glasses.
+
+Running Glasses --------
+Glasses completed in 0.002580 seconds
+Compacting completed in 0.001480 seconds
+Possible faces: 2
+
+Glasses Results
+
+Completed test in 0.004104 seconds
+Glasses were detected
+
+
+BRUTE FORCE
+Running All Kernels --------
+All kernels completed in 0.029050 seconds
+
+Running Merge Results --------
+Merge Results completed in 0.000839 seconds
+Compacting completed in 0.001653 seconds
+Possible faces: 3
+
+Results
+
+Completed test in 0.033715 seconds
+A face was detected
+final% ./detect test/glasses/pic11247.jpg                                                                                                                                                                                                                                                                         [master]
+OpenCV Intergral time: 0.001363
+CUDA Intergral time: 0.009475
+Window Size:     	139
+Image Size : (772 , 558)
+
+
+CASCADING
+Running ID1 --------
+ID1 completed in 0.001064 seconds
+Compacting completed in 0.001789 seconds
+Possible faces: 21
+
+Running ID2 --------
+ID2 completed in 0.000921 seconds
+Compacting completed in 0.001796 seconds
+Possible faces: 3
+
+Running ID3 --------
+ID3 completed in 0.008566 seconds
+Compacting completed in 0.001493 seconds
+Possible faces: 3
+
+Running ID4 --------
+ID4 completed in 0.010295 seconds
+Compacting completed in 0.002576 seconds
+Possible faces: 3
+
+Face Results
+
+Completed test in 0.030589 seconds
+A face was detected
+
+
+Checking for glasses.
+
+Running Glasses --------
+Glasses completed in 0.002637 seconds
+Compacting completed in 0.001221 seconds
+Possible faces: 2
+
+Glasses Results
+
+Completed test in 0.003904 seconds
+Glasses were detected
+
+
+BRUTE FORCE
+Running All Kernels --------
+All kernels completed in 0.027788 seconds
+
+Running Merge Results --------
+Merge Results completed in 0.000740 seconds
+Compacting completed in 0.001789 seconds
+Possible faces: 3
+
+Results
+
+Completed test in 0.032108 seconds
+A face was detected
+final% ./detect test/glasses/pic11247.jpg                                                                                                                                                                                                                                                                         [master]
+OpenCV Intergral time: 0.001276
+CUDA Intergral time: 0.009277
+Window Size:     	139
+Image Size : (772 , 558)
+
+
+CASCADING
+Running ID1 --------
+ID1 completed in 0.000306 seconds
+Compacting completed in 0.000321 seconds
+Possible faces: 21
+
+Running ID2 --------
+ID2 completed in 0.000264 seconds
+Compacting completed in 0.000173 seconds
+Possible faces: 3
+
+Running ID3 --------
+ID3 completed in 0.008042 seconds
+Compacting completed in 0.001794 seconds
+Possible faces: 3
+
+Running ID4 --------
+ID4 completed in 0.008074 seconds
+Compacting completed in 0.001648 seconds
+Possible faces: 3
+
+Face Results
+
+Completed test in 0.023414 seconds
+A face was detected
+
+
+Checking for glasses.
+
+Running Glasses --------
+Glasses completed in 0.002588 seconds
+Compacting completed in 0.001793 seconds
+Possible faces: 2
+
+Glasses Results
+
+Completed test in 0.004430 seconds
+Glasses were detected
+
+
+BRUTE FORCE
+Running All Kernels --------
+All kernels completed in 0.028960 seconds
+
+Running Merge Results --------
+Merge Results completed in 0.003289 seconds
+Compacting completed in 0.002585 seconds
+Possible faces: 3
+
+Results
+
+Completed test in 0.037054 seconds
+A face was detected
