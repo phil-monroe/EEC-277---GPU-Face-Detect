@@ -20,7 +20,7 @@
 \bigskip
 
 \begin{abstract}
-In this paper, we implemented the beginnings of the Viola-Jones object detection method as it applies to faces. We also added a single feature classifier to detect the presence of glasses. To implement this on the GPU, we first find the integral image which is done serially because it is faster. Then, we cascade our identifiers and apply them using the integral image to minimize memory accesses. Finally, we present the list of our hypotheses for the location of the face back to the CPU. INSERT SOME JUNK ABOUT RESULTS HERE
+In this paper, we implemented the beginnings of the Viola-Jones object detection method as it applies to faces. We also added a single feature classifier to detect the presence of glasses. To implement this on the GPU, we first find the integral image which is done serially because it is faster. Then, we cascade our identifiers and apply them using the integral image to minimize memory accesses. Finally, we present the list of our hypotheses for the location of the face back to the CPU. INSERT SOME JUNK ABOUT RESULTS HERE - NEED TO REDO THIS WITH MORE DETAILS - make it technical
 \end{abstract}
 
 \section{Introduction}
@@ -48,8 +48,7 @@ The other portion of Viola-Jones face detection was the use of a classifier \emp
 
 
 \subsection{Glasses Classifier}
-text and figure of our glasses classifier
-
+To extend the Viola-Jones face detection algorithm, we added a glasses classifier at the end of the classifier cascade to detect whether the face had glasses or not. Figure 2 shows the glasses classifier that we designed. The idea behind this classifier is that it will pick up on the portions of the frame that are on top of skin. Thus, the darker frame will be subtracted from the lighter skin areas on both the bridge of the glasses and the portion that goes, from the front, back to the ears.
 \begin{figure}[h!]
 	\centering
 		\includegraphics[width=40mm]{glasses_identifier.pdf}
@@ -57,19 +56,16 @@ text and figure of our glasses classifier
 \end{figure}
 
 \section{Results}
-Stuff goes here
-Actual results: face images: 0/50 glasses  49/50 faces
-	non-face images: 8/50 glasses  38/50 faces
-	glasses images: 20/25 glasses  24/25 faces
-
-	Exec time: cascade: 0.020334
-		brute force: 0.033715
-		glasses: 0.004104
+We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 92% but a false positive rate of 76%. The glasses classifier did well with an accuracy of 83.3% and a false positive rate of 21.1%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds.
 
 \section{Discussion}
 64 Threads per block, 3 kernel calls
 
 Max occupancy is at 128 threads per block
+
+Discuss how our results will scale with 200 classifiers instead of just 4 (really 3)
+
+Talk about how one classifier didn't get positive values
 
 \section{Conclusion}
 Conclusion goes here
