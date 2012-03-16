@@ -3,6 +3,7 @@
 \usepackage[pdftex]{hyperref}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{subfigure}
 \hypersetup{
 	pdfauthor={Phil Monroe and Kramer Straube},
 	pdftitle={Face Detection on the GPU}}
@@ -54,16 +55,31 @@ The other portion of Viola-Jones face detection was the use of a classifier \emp
 
 % Glasses Classifier -----------------------------------------------------------------
 \subsection{Glasses Classifier}
-To extend the Viola-Jones face detection algorithm, we added a glasses classifier at the end of the classifier cascade to detect whether the face had glasses or not. Figure 2 shows the glasses classifier that we designed. The idea behind this classifier is that it will pick up on the portions of the frame that are on top of skin. Thus, the darker frame will be subtracted from the lighter skin areas on both the bridge of the glasses and the portion that goes, from the front, back to the ears.
 \begin{figure}[h!]
 	\centering
 		\includegraphics[width=30mm]{glasses_identifier.pdf}
 		\caption{The glasses classifier that we implemented}
 \end{figure}
+To extend the Viola-Jones face detection algorithm, we added a glasses classifier at the end of the classifier cascade to detect whether the face had glasses or not. Figure 2 shows the glasses classifier that we designed. The idea behind this classifier is that it will pick up on the portions of the frame that are on top of skin. Thus, the darker frame will be subtracted from the lighter skin areas on both the bridge of the glasses and the portion that goes, from the front, back to the ears.
+
 
 
 % Results -----------------------------------------------------------------
 \section{Results}
+\begin{figure}[ht]
+\centering
+\subfigure[The input for the sample run]{
+\includegraphics[width=60mm]{face.png}
+\label{fig:subfig1}
+}
+\subfigure[The output heat map]{
+\includegraphics[width=56mm]{heatmap.png}
+\label{fig:subfig2}
+}
+\label{fig:subfigureExample}
+\caption[]{Input image and resulting heat map of face detection.}
+\end{figure}
+
 We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 97.3\% but a false positive rate of 76\%. The glasses classifier did well with an accuracy of 83.3\% and a false positive rate of 21.1\%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65\% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds. These timings are not absolute because it depends on the image and how the cascade can eliminate sub-windows early (reducing work for later stages). In a simple extrapolation of our timing results, we took the glasses classifier and assumed that all later classifiers in a 200-classifier Viola-Jones parallel implementation would complete in that much time. The result was that it would take 824.718 ms to complete. This result is pessimistic because the cascade of classifiers would cause fewer and fewer sub-windows to be evaluated. All of our timing and accuracy results are found in Tables 1 and 2. Figure 4 shows a sample run of our implementation on the image given in Figure 3. In this image, the brighter spots lasted further through the cascade.
 
 \begin{center}
@@ -108,17 +124,7 @@ We ran the cascaded algorithm with three different datasets: faces, non-faces, a
 
 \end{center}
 
-\begin{figure}[h!]
-	\centering
-		\includegraphics[width=80mm]{face.png}
-		\caption{The input for the sample run}
-\end{figure}
 
-\begin{figure}[h!]
-	\centering
-		\includegraphics[width=80mm]{heatmap.png}
-		\caption{The output heat map for the example run}
-\end{figure}
 
 
 % Discussion -----------------------------------------------------------------
