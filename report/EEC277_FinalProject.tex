@@ -64,7 +64,7 @@ To extend the Viola-Jones face detection algorithm, we added a glasses classifie
 
 % Results -----------------------------------------------------------------
 \section{Results}
-We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 97.3\% but a false positive rate of 76\%. The glasses classifier did well with an accuracy of 83.3\% and a false positive rate of 21.1\%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65\% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds. These timings are not absolute because it depends on the image and how the cascade can eliminate sub-windows early (reducing work for later stages). In a simple extrapolation of our timing results, we took the glasses classifier and assumed that all later classifiers in a 200-classifier Viola-Jones parallel implentation would complete in that much time. The result was that it would take 824.718 ms to complete. This result is pessimistic because the cascade of classifiers would cause fewer and fewer sub-windows to be evaluated. All of our timing and accuracy results are found in Tables 1 and 2. Figure 4 shows a sample run of our implementation on the image given in Figure 3. In this image, the brighter spots lasted further through the cascade.
+We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 97.3\% but a false positive rate of 76\%. The glasses classifier did well with an accuracy of 83.3\% and a false positive rate of 21.1\%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65\% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds. These timings are not absolute because it depends on the image and how the cascade can eliminate sub-windows early (reducing work for later stages). In a simple extrapolation of our timing results, we took the glasses classifier and assumed that all later classifiers in a 200-classifier Viola-Jones parallel implementation would complete in that much time. The result was that it would take 824.718 ms to complete. This result is pessimistic because the cascade of classifiers would cause fewer and fewer sub-windows to be evaluated. All of our timing and accuracy results are found in Tables 1 and 2. Figure 4 shows a sample run of our implementation on the image given in Figure 3. In this image, the brighter spots lasted further through the cascade.
 
 \begin{center}
 	\begin{table}[h!]
@@ -101,7 +101,7 @@ We ran the cascaded algorithm with three different datasets: faces, non-faces, a
 				Parallel Face Detection 		& 20.334 				&				\\ \hline
 				Glasses Detection 				& 4.104 					&				\\ \hline
 				Brute Force Face Detection 	& 33.715 				&				\\ \hline
-				Extrapolated 200 Feature Cascade in Parallel  & 824.718    & \\ \hline
+				Extrapolated 200 Feature Cascade in Parallel  & 824.718    & 	\\ \hline
 			\end{tabular}
 		}
 	\end{table}
@@ -117,7 +117,7 @@ We ran the cascaded algorithm with three different datasets: faces, non-faces, a
 \begin{figure}[h!]
 	\centering
 		\includegraphics[width=80mm]{heatmap.png}
-		\caption{The output heatmap for the example run}
+		\caption{The output heat map for the example run}
 \end{figure}
 
 
