@@ -17,7 +17,7 @@
 
 % Date
 \centerline{Mar. 15, 2012}
-\bigskip
+\medskip
 
 \begin{abstract}
 In this paper, we implemented the beginnings of the Viola-Jones object detection method as it applies to faces. We also added a single feature classifier to detect the presence of glasses. To implement this on the GPU, we first find the integral image which is done serially because it is faster. Then, we cascade our identifiers and apply them using the integral image to minimize memory accesses. Finally, we present the list of our hypotheses for the location of the face back to the CPU. INSERT SOME JUNK ABOUT RESULTS HERE - NEED TO REDO THIS WITH MORE DETAILS - make it technical
@@ -46,7 +46,7 @@ The classifiers are simple rectangular identifiers to determine different featur
 The other portion of Viola-Jones face detection was the use of a classifier \emph{cascade}. This means that the output of one classifier (which contains the list of sub-windows that may have a face) is the input for the next classifier. So if any classifier rejects a sub-window, the algorithm rejects the sub-window. If all of the classifiers accept a sub-window, then the algorithm says that there is a face at that sub-window. The alternative to the cascade approach is to apply all of the classifiers to every sub-window and define some number of acceptances that each sub-window needs to determine that there is a face there. We implemented both of these approaches to analyze which would be more efficient on the GPU.
 \begin{figure}[h!]
 	\centering
-		\includegraphics[width=80mm]{classifiers.pdf}
+		\includegraphics[width=60mm]{classifiers.pdf}
 		\caption{The set of identifiers used in our implementation of Viola-Jones}
 \end{figure}
 
@@ -56,7 +56,7 @@ The other portion of Viola-Jones face detection was the use of a classifier \emp
 To extend the Viola-Jones face detection algorithm, we added a glasses classifier at the end of the classifier cascade to detect whether the face had glasses or not. Figure 2 shows the glasses classifier that we designed. The idea behind this classifier is that it will pick up on the portions of the frame that are on top of skin. Thus, the darker frame will be subtracted from the lighter skin areas on both the bridge of the glasses and the portion that goes, from the front, back to the ears.
 \begin{figure}[h!]
 	\centering
-		\includegraphics[width=40mm]{glasses_identifier.pdf}
+		\includegraphics[width=30mm]{glasses_identifier.pdf}
 		\caption{The glasses classifier that we implemented}
 \end{figure}
 
@@ -113,61 +113,32 @@ This implementation of the Viola-Jones algorithm performed fairly well with the 
 
 A fault was found in our implementation during while tuning the classifiers that is worth noting. The third identifier used was providing negative fit values which makes it interesting to threshold. To combat this, the absolute value of the fit value is used to be thresholded. This is bad since it makes the third and fourth classifiers effectively the same. The classifier was left in due to time constraints and to help show timing results. 
 
+It is interesting to point out that the parallel computation of the integral image performed much slower than computing the image on the CPU. This is since computing the integral image is very simple and iterative, which makes excellent use of the CPU's caches. On the GPU, the bottleneck becomes the lack of mathematical computation compared to the number of memory accesses. This is compounded when memory coalescing is taken into effect. Depending on how the image is stored in memory, on of the passes will coalesce and the other will not, causing the GPU implementation to slow down even more.
 
-
-
-	
-% 64 Threads per block, 3 kernel calls
-% 
-% Max occupancy is at 128 threads per block
-% 
-% Discuss how our results will scale with 200 classifiers instead of just 4 (really 3)
-% 
-% Talk about how one classifier didn't get positive values
+It is also worth mentioning the comparison of the cascading classifier method vs. the brute force computation of all classifiers. By cascading classifiers, full GPU occupancy can be achieved by increasing the number and size of sub-windows as well as classifier scales being run concurrently. As sub-windows start to be eliminated, the GPU starts wasting cycles by not filling all cores with work to do. This reduction in sub-windows is a big win for the serial implementation, however more computation could be exploited using a GPU. The brute force method of computing all classifiers in parallel was considered to improve maximum occupancy. While the brute force method did take longer than the cascading approach, it provides more detailed results about what each sub-window contains which can be used in smarter, tournament style detectors. 
 
 % Conclusion -----------------------------------------------------------------
 \section{Conclusion}
-Conclusion goes here
+This project provided an implementation of the Viola-Jones face detection on the GPU with the added functionality of glasses detection. This simplified version was able to detect faces with an accuracy of 97.3\% and glasses at 96\% accuracy. The drawback of the simple implementation is the rather large 76\% false positive rate. This project did bring about many interesting discoveries about the detection algorithm, such as the benefit of serial integral image computation and the brute force parallel classifier computation.
 
 % References -----------------------------------------------------------------
-\clearpage
-{\large \bf {References}}
-\medskip
+\footnotesize
+\section{References}
 
-\normalsize
 \begin{itemize}
-	\item Viola, Jones: {\it Rapid Object Detection using a Boosted Cascade of Simple Feature}
-	\newline \url {http://bit.ly/pgwskh}
-	
-	\item Viola, Jones: {\it Robust Real-time Object Detection}
-	\newline \url {http://bit.ly/genUvI}
-	
-	\item Hefenbrock, Oberg, et. al. {\it Accelerating Viola-Jones Face Detection to FPGA-Level using GPUs}
-	\newline \url {http://bit.ly/yRxbc4}
-	
-	\item Patil: {\it Face Detection on GPU}
-	\newline \url {https://sites.google.com/site/facedetectionongpu/}
-	
-	\item Obukhov: {\it Face Detection with CUDA}
-	\newline \url {http://www.slideshare.net/NVIDIA/1071-gtc09}
-	
-	\item Thrust CUDA Algorithm Library
-	\newline \url {http://code.google.com/p/thrust}
-	
-
-
+	\item Viola, Jones: {\it Rapid Object Detection using a Boosted Cascade of Simple Feature} - \url {http://bit.ly/pgwskh}
+	\item Viola, Jones: {\it Robust Real-time Object Detection} - \url {http://bit.ly/genUvI}
+	\item Hefenbrock, Oberg, et. al. {\it Accelerating Viola-Jones Face Detection to FPGA-Level using GPUs} - \url {http://bit.ly/yRxbc4}
+	\item Patil: {\it Face Detection on GPU} - \url {https://sites.google.com/site/facedetectionongpu/}
+	\item Obukhov: {\it Face Detection with CUDA} - \url {http://www.slideshare.net/NVIDIA/1071-gtc09}
+	\item Thrust CUDA Algorithm Library - \url {http://code.google.com/p/thrust}
 \end{itemize}
 
-\vspace{2cm}
-
-
 % Source Code -----------------------------------------------------------------
-{\large \bf {Source Code and Project Files}}
-\vspace{5 mm}
+\section{Source Code and Project Files}
 
-The website containing all project files can be found at:
+\hspace*{1.5em}The website containing all project files can be found at:
 \newline \url {http://phil-monroe.github.com/EEC-277---GPU-Face-Detect/}
-
 \vspace{5 mm}
 
 The source code is hosted on GitHub at:
