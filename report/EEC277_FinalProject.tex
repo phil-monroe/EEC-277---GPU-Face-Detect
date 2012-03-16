@@ -29,18 +29,21 @@ In this paper, we will address the application of face detection on the GPU. We 
 
 %Do we need to mention how we make sub-windows? (how many / image)
 \section{Viola-Jones Object Detection}
-Viola-Jones object detection focuses on using simple identifiers to determine whether the object exists in the image or not. The algorithm also performs object localization if sufficiently many identifiers are used. We used this algorithm to determine the presence (or lack thereof) of a face in an input image. The algorithm splits the image into numerous \emph{sub-windows} or small regions of the image upon which detection is applied.
+Viola-Jones object detection focuses on using simple identifiers to determine whether the object exists in the image or not. The algorithm also performs object localization if sufficiently many identifiers are used. We used this algorithm to determine the presence (or lack thereof) of a face in an input image. The algorithm splits the image into numerous \emph{sub-windows} or small regions of the image upon which detection is applied. Sub-windows help the algorithm to distinguish between small and large faces within an image. The sub-window size is computed in this implementation by taking the smaller image dimension (rows or columns) and dividing by four.
 
+
+% Integral Image -----------------------------------------------------------------
 \subsection{Integral Image}
 To speed up computation of the identifiers, the Viola-Jones algorithm pre-computes the integral image. The integral image defines each pixel as the sum of all pixels that are both above and to the left of it. We explored both the standard serial implementation of computing the integral image from OpenCV as well as a parallel implementation.
 
 The parallel implementation first performs a scan operation on the columns to create a sum for each pixel location of all the pixels above it. Then, the algorithm does a scan operation on the rows to add up all of the column sums for each pixel to the left of it. This calculates the sum of all of the pixels above and to the left of the current pixel.
 
 
+% Cascade of Classifiers -----------------------------------------------------------------
 \subsection{Cascade of Classifiers}
 The classifiers are simple rectangular identifiers to determine different features of the face. To compute whether the classifier accepts that the given sub-window has a face, the algorithm subtracts the "black" area from the "white" area of the classifier. Figure 1 shows the classifiers we used for face detection. In the Viola-Jones paper, they use two hundred of these kinds of classifiers but we use a small subset of four classifiers because we are interested in how this algorithm applies to the GPU instead of the actual results. Four was sufficient to see the difficulties with implementing this algorithm on the GPU.
 
-The other portion of Viola-Jones face detection was the use of a classifier \emph{cascade}. This means that the output of one classifier (which contains the list of sub-windows that may have a face) is the input for the next classifier. So if any classifier rejects a sub-window, the algorithm rejects the sub-window. If all of the classifiers accept a sub-window, then the algorithm says that there is a face at that subwindow. The alternative to the cascade approach is to apply all of the classifiers to every sub-window and define some number of acceptances that each sub-window needs to determine that there is a face there. We implemented both of these approaches to analyze which would be more efficient on the GPU.
+The other portion of Viola-Jones face detection was the use of a classifier \emph{cascade}. This means that the output of one classifier (which contains the list of sub-windows that may have a face) is the input for the next classifier. So if any classifier rejects a sub-window, the algorithm rejects the sub-window. If all of the classifiers accept a sub-window, then the algorithm says that there is a face at that sub-window. The alternative to the cascade approach is to apply all of the classifiers to every sub-window and define some number of acceptances that each sub-window needs to determine that there is a face there. We implemented both of these approaches to analyze which would be more efficient on the GPU.
 \begin{figure}[h!]
 	\centering
 		\includegraphics[width=80mm]{classifiers.pdf}
@@ -48,7 +51,7 @@ The other portion of Viola-Jones face detection was the use of a classifier \emp
 \end{figure}
 
 
-
+% Glasses Classifier -----------------------------------------------------------------
 \subsection{Glasses Classifier}
 To extend the Viola-Jones face detection algorithm, we added a glasses classifier at the end of the classifier cascade to detect whether the face had glasses or not. Figure 2 shows the glasses classifier that we designed. The idea behind this classifier is that it will pick up on the portions of the frame that are on top of skin. Thus, the darker frame will be subtracted from the lighter skin areas on both the bridge of the glasses and the portion that goes, from the front, back to the ears.
 \begin{figure}[h!]
@@ -57,11 +60,13 @@ To extend the Viola-Jones face detection algorithm, we added a glasses classifie
 		\caption{The glasses classifier that we implemented}
 \end{figure}
 
+
+% Results -----------------------------------------------------------------
 \section{Results}
-We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 92\% but a false positive rate of 76\%. The glasses classifier did well with an accuracy of 83.3\% and a false positive rate of 21.1\%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65\% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds. These timings are not absolute because it depends on the image and how the cascade can eliminate sub-windows early (reducing work for later stages).
+We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 97.3\% but a false positive rate of 76\%. The glasses classifier did well with an accuracy of 83.3\% and a false positive rate of 21.1\%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65\% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds. These timings are not absolute because it depends on the image and how the cascade can eliminate sub-windows early (reducing work for later stages).
 
 \begin{center}
-	\begin{table}
+	\begin{table}[h!]
 		\caption{Face Detection Results}
 		\centering
 		\medskip
@@ -80,10 +85,7 @@ We ran the cascaded algorithm with three different datasets: faces, non-faces, a
 		}
 	\end{table}
 
-\end{center}
-
-\begin{center}
-	\begin{table}
+	\begin{table}[h!]
 		\centering
 		\caption{Face Detection Performance}
 		\medskip
@@ -104,17 +106,26 @@ We ran the cascaded algorithm with three different datasets: faces, non-faces, a
 
 \end{center}
 
+
+% Discussion -----------------------------------------------------------------
 \section{Discussion}
-64 Threads per block, 3 kernel calls
+This implementation of the Viola-Jones algorithm performed fairly well with the only real downside being the 76\% false positive rate. To fix this, more classifiers can be implemented to describe a face much better than the four simple classifiers used. Sources show that using up to 200 classifiers can weed out the false positives. That being said, our detector did show 97.3\% accuracy in finding faces and can be run at a rate around 46 images per second, which is fast enough for real time classification. The image rate will drop as the number of classifiers is increased, but sources show that the algorithm can achieve faster than 25 images per second on newer GPUs.
 
-Max occupancy is at 128 threads per block
+A fault was found in our implementation during while tuning the classifiers that is worth noting. The third identifier used was providing negative fit values which makes it interesting to threshold. To combat this, the absolute value of the fit value is used to be thresholded. This is bad since it makes the third and fourth classifiers effectively the same. The classifier was left in due to time constraints and to help show timing results. 
 
-Discuss how our results will scale with 200 classifiers instead of just 4 (really 3)
 
-Talk about how one classifier didn't get positive values
 
-Mention putting integral in shared memory as something we should have done but didn't
 
+	
+% 64 Threads per block, 3 kernel calls
+% 
+% Max occupancy is at 128 threads per block
+% 
+% Discuss how our results will scale with 200 classifiers instead of just 4 (really 3)
+% 
+% Talk about how one classifier didn't get positive values
+
+% Conclusion -----------------------------------------------------------------
 \section{Conclusion}
 Conclusion goes here
 
@@ -126,13 +137,13 @@ Conclusion goes here
 \normalsize
 \begin{itemize}
 	\item Viola, Jones: {\it Rapid Object Detection using a Boosted Cascade of Simple Feature}
-	\newline \url {http://bit.ly/wKRTl3 }
+	\newline \url {http://bit.ly/pgwskh}
 	
 	\item Viola, Jones: {\it Robust Real-time Object Detection}
-	\newline \url {http://bit.ly/y3dsqn }
+	\newline \url {http://bit.ly/genUvI}
 	
 	\item Hefenbrock, Oberg, et. al. {\it Accelerating Viola-Jones Face Detection to FPGA-Level using GPUs}
-	\newline \url {http://bit.ly/xnlHjI }
+	\newline \url {http://bit.ly/yRxbc4}
 	
 	\item Patil: {\it Face Detection on GPU}
 	\newline \url {https://sites.google.com/site/facedetectionongpu/}
@@ -141,7 +152,7 @@ Conclusion goes here
 	\newline \url {http://www.slideshare.net/NVIDIA/1071-gtc09}
 	
 	\item Thrust CUDA Algorithm Library
-	\newline \url {http://code.google.com/p/thrust/ }
+	\newline \url {http://code.google.com/p/thrust}
 	
 
 
