@@ -58,7 +58,51 @@ To extend the Viola-Jones face detection algorithm, we added a glasses classifie
 \end{figure}
 
 \section{Results}
-We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 92% but a false positive rate of 76%. The glasses classifier did well with an accuracy of 83.3% and a false positive rate of 21.1%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds. These timings are not absolute because it depends on the image and how the cascade can eliminate sub-windows early (reducing work for later stages).
+We ran the cascaded algorithm with three different datasets: faces, non-faces, and faces with glasses. The cascaded algorithm running on the faces dataset with 50 pictures produced a result of 49 faces detected and zero glasses detected. The same algorithm running with the non-face dataset with 50 pictures resulted in 38 faces detected and 8 glasses detected. The face detector ran on the glasses dataset with 25 pictures and found 24 face, 20 of which had glasses. Overall, the face detector has weak results with an accuracy of 92\% but a false positive rate of 76\%. The glasses classifier did well with an accuracy of 83.3\% and a false positive rate of 21.1\%. The entire cascaded face detection algorithm ran in 0.020334 seconds. The non-cascaded algorithm ran 65\% slower at 0.033715 seconds. The glasses classifier ran in 0.004104 seconds. These timings are not absolute because it depends on the image and how the cascade can eliminate sub-windows early (reducing work for later stages).
+
+\begin{center}
+	\begin{table}
+		\caption{Face Detection Results}
+		\centering
+		\medskip
+
+		\scalebox{0.76}{
+			\begin{tabular}{ | l | c | c | c | p{4cm} |}
+
+				\hline
+				Dataset & Faces Found & Glasses Found & Total Files & Comment 	\\ \hline
+				Faces 					& 49 	& 0 	& 50 	& 98\% Accuracy			\\ \hline
+				Non-Faces 				& 38 	& 8 	& 50	& 76\% False Positive	\\ \hline
+				Faces with Glasses 	& 24 	& 20 	& 25	& 96\% Face Accuracy
+				\newline 80\% Glasses Accuracy	\\ \hline
+
+			\end{tabular}
+		}
+	\end{table}
+
+\end{center}
+
+\begin{center}
+	\begin{table}
+		\centering
+		\caption{Face Detection Performance}
+		\medskip
+
+		\scalebox{0.76}{
+			\begin{tabular}{ | l | c | l |}
+
+				\hline
+				Operation	 						& Time (ms) 			& Comment 	\\ \hline
+				Serial Integral Image			& 1.277					&				\\ \hline
+				Parallel Integral Image			& 9.329 					& 	Much slower than serial\\ \hline
+				Parallel Face Detection 		& 20.334 				&				\\ \hline
+				Glasses Detection 				& 4.104 					&				\\ \hline
+				Brute Force Face Detection 	& 33.715 				&				\\ \hline
+			\end{tabular}
+		}
+	\end{table}
+
+\end{center}
 
 \section{Discussion}
 64 Threads per block, 3 kernel calls
@@ -102,6 +146,23 @@ Conclusion goes here
 
 
 \end{itemize}
+
+\vspace{2cm}
+
+
+% Source Code -----------------------------------------------------------------
+{\large \bf {Source Code and Project Files}}
+\vspace{5 mm}
+
+The website containing all project files can be found at:
+\newline \url {http://phil-monroe.github.com/EEC-277---GPU-Face-Detect/}
+
+\vspace{5 mm}
+
+The source code is hosted on GitHub at:
+\newline \url {https://github.com/phil-monroe/EEC-277---GPU-Face-Detect}
+
+
 
 \end{document}
 
