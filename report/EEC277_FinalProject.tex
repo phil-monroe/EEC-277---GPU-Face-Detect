@@ -20,7 +20,8 @@
 \medskip
 
 \begin{abstract}
-In this paper, we implemented the beginnings of the Viola-Jones object detection method as it applies to faces. We also added a single feature classifier to detect the presence of glasses. To implement this on the GPU, we first find the integral image which is done serially because it is faster. Then, we cascade our identifiers and apply them using the integral image to minimize memory accesses. Finally, we present the list of our hypotheses for the location of the face back to the CPU. INSERT SOME JUNK ABOUT RESULTS HERE - NEED TO REDO THIS WITH MORE DETAILS - make it technical
+In this paper, we implemented the beginnings of the Viola-Jones object detection method as it applies to faces. We also added a single feature classifier to detect the presence of glasses. To implement this on the GPU, we first find the integral image which is done serially because it is faster. Then, we cascade our identifiers and apply them using the integral image to minimize memory accesses. Finally, if any sub-windows pass all classifiers, it is concluded that the image contains a face. This simple implementation provides 97.3\% accuracy at detecting faces, 96\% accuracy at detecting glasses, a false positive rate of 76\% and runs at a rate of 46 images scanned per second.
+ 
 \end{abstract}
 
 \section{Introduction}
