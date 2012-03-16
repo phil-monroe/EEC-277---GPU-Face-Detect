@@ -2,3 +2,7 @@
 Caltech_WebFaces
 detect
 *.o
+*.aux
+*.log
+*.out
+*.gz
